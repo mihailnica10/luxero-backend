@@ -1,5 +1,8 @@
+import { render } from "@react-email/render";
 import { Hono } from "hono";
 import dbConnect from "../db";
+import { sendEmail } from "../email/client";
+import { OrderConfirmationEmail } from "../email/templates/order-confirmation";
 import { ErrorCodes } from "../lib/error-codes";
 import { error, success } from "../lib/response";
 import { Competition, Entry, Order, Profile } from "../models";
@@ -71,6 +74,14 @@ app.post("/create-checkout-session", async (c) => {
     await order.save();
 
     // Create entries for each competition
+    const emailItems: Array<{
+      competitionTitle: string;
+      quantity: number;
+      unitPrice: number;
+      ticketNumbers: number[];
+      totalPrice: number;
+    }> = [];
+
     for (const item of items) {
       const competition = await Competition.findById(item.competitionId).lean();
       if (!competition) continue;
@@ -96,7 +107,50 @@ app.post("/create-checkout-session", async (c) => {
       await Profile.findByIdAndUpdate(userId, {
         $inc: { totalEntries: item.quantity, totalSpent: competition.ticketPrice * item.quantity },
       });
+
+      emailItems.push({
+        competitionTitle: competition.title,
+        quantity: item.quantity,
+        unitPrice: competition.ticketPrice,
+        ticketNumbers,
+        totalPrice: competition.ticketPrice * item.quantity,
+      });
     }
+
+    // Send order confirmation email (fire-and-forget; don't block the response)
+    (async () => {
+      try {
+        const profile = await Profile.findById(userId).lean();
+        const userName = profile?.fullName || profile?.email?.split("@")[0] || "Customer";
+        const orderDate = new Date().toLocaleString("en-GB", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZoneName: "short",
+        });
+        const emailHtml = await render(
+          OrderConfirmationEmail({
+            userName,
+            orderId: order._id.toString(),
+            orderDate,
+            items: emailItems,
+            subtotal: subtotal || 0,
+            discount: discount || 0,
+            total,
+          })
+        );
+        await sendEmail({
+          to: profile?.email || "",
+          subject: `Order confirmed — Luxero (#${order._id.toString()})`,
+          html: emailHtml,
+        });
+      } catch (emailErr) {
+        console.error("Failed to send order confirmation email:", emailErr);
+      }
+    })();
 
     return success(c, {
       orderId: order._id,

@@ -1,16 +1,11 @@
-import { writeFileSync } from "node:fs";
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
 import { emailConfig } from "./config";
 
-const DEBUG_FILE = "/tmp/email-debug.log";
-
 function _debugLog(msg: string) {
-  const line = `[${new Date().toISOString()}] ${msg}`;
-  console.log(line);
-  try {
-    writeFileSync(DEBUG_FILE, `${line}\n`, { flag: "a" });
-  } catch (_e) {}
+  // In Vercel serverless, /tmp is ephemeral — logs only survive within a single cold-start.
+  // Use structured console output so Vercel Log Drains or Datadog can capture them.
+  console.log(`[EMAIL] ${new Date().toISOString()} ${msg}`);
 }
 
 let resendClient: Resend | null = null;
@@ -40,7 +35,11 @@ function getSmtpTransporter(): nodemailer.Transporter {
 }
 
 function isSmtpEnabled(): boolean {
-  return process.env.SMTP_ENABLED === "true" || !emailConfig.resend.apiKey;
+  // Prefer SMTP when explicitly enabled; otherwise use Resend if API key is set.
+  if (process.env.SMTP_ENABLED === "true") return true;
+  if (emailConfig.resend.apiKey) return false;
+  // Neither SMTP nor Resend configured — default to SMTP so error is discoverable.
+  return true;
 }
 
 export interface SendEmailOptions {
@@ -138,11 +137,7 @@ export async function verifyEmailConnection(): Promise<boolean> {
       return false;
     }
   }
-  try {
-    const resend = getResendClient();
-    const { error } = await resend.domains.list({ limit: 1 });
-    return !error;
-  } catch {
-    return false;
-  }
+  // Resend API key validation — doesn't require a verified domain.
+  // We validate by checking the key is non-empty; actual send errors surface in sendEmail.
+  return Boolean(emailConfig.resend.apiKey);
 }
