@@ -1,8 +1,13 @@
 import { Hono } from "hono";
 import dbConnect from "../../db";
+import { ErrorCodes } from "../../lib/error-codes";
+import { error, success } from "../../lib/response";
+import { requireAdmin } from "../../middleware/auth";
 import { Profile } from "../../models";
 
 const app = new Hono();
+
+app.use("*", requireAdmin);
 
 // List all profiles
 app.get("/", async (c) => {
@@ -18,13 +23,10 @@ app.get("/", async (c) => {
       Profile.countDocuments(),
     ]);
 
-    return c.json({
-      profiles,
-      pagination: { total, page, limit, pages: Math.ceil(total / limit) },
-    });
-  } catch (error) {
-    console.error("Error listing profiles:", error);
-    return c.json({ error: "Internal server error" }, 500);
+    return success(c, { profiles, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) {
+    console.error("Error listing profiles:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
   }
 });
 
@@ -37,13 +39,13 @@ app.get("/:id", async (c) => {
     const profile = await Profile.findById(id).lean();
 
     if (!profile) {
-      return c.json({ error: "Profile not found" }, 404);
+      return error(c, ErrorCodes.NOT_FOUND, "Profile not found", 404);
     }
 
-    return c.json(profile);
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    return c.json({ error: "Internal server error" }, 500);
+    return success(c, profile);
+  } catch (err) {
+    console.error("Error fetching profile:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
   }
 });
 
@@ -57,13 +59,13 @@ app.put("/:id", async (c) => {
     const profile = await Profile.findByIdAndUpdate(id, body, { new: true }).lean();
 
     if (!profile) {
-      return c.json({ error: "Profile not found" }, 404);
+      return error(c, ErrorCodes.NOT_FOUND, "Profile not found", 404);
     }
 
-    return c.json(profile);
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    return c.json({ error: "Internal server error" }, 500);
+    return success(c, profile);
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
   }
 });
 
@@ -76,13 +78,13 @@ app.delete("/:id", async (c) => {
     const profile = await Profile.findByIdAndDelete(id);
 
     if (!profile) {
-      return c.json({ error: "Profile not found" }, 404);
+      return error(c, ErrorCodes.NOT_FOUND, "Profile not found", 404);
     }
 
-    return c.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting profile:", error);
-    return c.json({ error: "Internal server error" }, 500);
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting profile:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
   }
 });
 

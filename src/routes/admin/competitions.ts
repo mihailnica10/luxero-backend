@@ -1,9 +1,12 @@
+import { render } from "@react-email/render";
 import { Hono } from "hono";
 import dbConnect from "../../db";
+import { sendEmail } from "../../email/client";
 import { ErrorCodes } from "../../lib/error-codes";
 import { parsePagination } from "../../lib/pagination";
 import { error, paginated, success } from "../../lib/response";
 import { requireAdmin } from "../../middleware/auth";
+import { WinNotificationEmail } from "../../email/templates/win-notification";
 import { Competition, Entry, Winner } from "../../models";
 
 const app = new Hono();
@@ -142,6 +145,32 @@ app.post("/:id/draw", async (c) => {
     });
 
     await Competition.findByIdAndUpdate(id, { status: "drawn" });
+
+    // Send win notification email (fire-and-forget)
+    (async () => {
+      try {
+        const winningProfile = await (await import("../../models")).Profile.findById(winningEntry.userId).lean();
+        if (!winningProfile?.email) return;
+        const userName = winningProfile.fullName || winningProfile.email.split("@")[0];
+        const claimUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/dashboard/wins`;
+        const emailHtml = await render(
+          WinNotificationEmail({
+            userName,
+            competitionName: competition.title,
+            prizeTitle: competition.prizeTitle || competition.title,
+            prizeValue: `£${(competition.prizeValue || 0).toLocaleString()}`,
+            claimUrl,
+          })
+        );
+        await sendEmail({
+          to: winningProfile.email,
+          subject: `Congratulations! You've won ${competition.prizeTitle || competition.title}!`,
+          html: emailHtml,
+        });
+      } catch (emailErr) {
+        console.error("Failed to send win notification email:", emailErr);
+      }
+    })();
 
     return success(c, { winner, competition, winningEntry });
   } catch (err) {

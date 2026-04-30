@@ -1,8 +1,13 @@
 import { Hono } from "hono";
 import dbConnect from "../../db";
+import { ErrorCodes } from "../../lib/error-codes";
+import { error, success } from "../../lib/response";
+import { requireAdmin } from "../../middleware/auth";
 import { ReferralPurchase } from "../../models";
 
 const app = new Hono();
+
+app.use("*", requireAdmin);
 
 // List all referral purchases
 app.get("/", async (c) => {
@@ -22,13 +27,10 @@ app.get("/", async (c) => {
       ReferralPurchase.countDocuments(query),
     ]);
 
-    return c.json({
-      referralPurchases,
-      pagination: { total, page, limit, pages: Math.ceil(total / limit) },
-    });
-  } catch (error) {
-    console.error("Error listing referral purchases:", error);
-    return c.json({ error: "Internal server error" }, 500);
+    return success(c, { referralPurchases, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) {
+    console.error("Error listing referral purchases:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
   }
 });
 
@@ -41,13 +43,13 @@ app.get("/:id", async (c) => {
     const referralPurchase = await ReferralPurchase.findById(id).lean();
 
     if (!referralPurchase) {
-      return c.json({ error: "ReferralPurchase not found" }, 404);
+      return error(c, ErrorCodes.NOT_FOUND, "ReferralPurchase not found", 404);
     }
 
-    return c.json(referralPurchase);
-  } catch (error) {
-    console.error("Error fetching referral purchase:", error);
-    return c.json({ error: "Internal server error" }, 500);
+    return success(c, referralPurchase);
+  } catch (err) {
+    console.error("Error fetching referral purchase:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
   }
 });
 
@@ -60,13 +62,13 @@ app.delete("/:id", async (c) => {
     const referralPurchase = await ReferralPurchase.findByIdAndDelete(id);
 
     if (!referralPurchase) {
-      return c.json({ error: "ReferralPurchase not found" }, 404);
+      return error(c, ErrorCodes.NOT_FOUND, "ReferralPurchase not found", 404);
     }
 
-    return c.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting referral purchase:", error);
-    return c.json({ error: "Internal server error" }, 500);
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting referral purchase:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
   }
 });
 
