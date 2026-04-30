@@ -76,4 +76,14 @@ app.get("/", async (c) => {
   return success(c, items);
 });
 
+// GET /api/faq/categories
+app.get("/categories", async (c) => {
+  const categories = [
+    { id: "general", name: "General" },
+    { id: "payment", name: "Payment" },
+    { id: "delivery", name: "Shipping & Delivery" },
+  ];
+  return success(c, categories);
+});
+
 export default app;
