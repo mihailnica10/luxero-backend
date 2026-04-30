@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "noEmit": true,
+    "moduleResolution": "bundler",
+    "types": ["node", "react"]
+  },
+  "exclude": ["node_modules"]
+}

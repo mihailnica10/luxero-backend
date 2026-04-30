@@ -1,0 +1,85 @@
+/**
+ * Luxero Email Design System
+ * Centralized design tokens following React Email best practices
+ */
+
+export const emailDesignSystem = {
+  colors: {
+    gold: "#D4AF37",
+    background: "#0A0A0B",
+    card: "#1A1A1D",
+    foreground: "#FFFFFF",
+    muted: "#A1A1AA",
+    border: "#27272A",
+    danger: "#EF4444",
+    success: "#22C55E",
+  },
+  typography: {
+    fontFamily: {
+      primary:
+        "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      mono: "ui-monospace, 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace",
+    },
+    h1: { fontSize: "24px", fontWeight: 600, lineHeight: "1.3", letterSpacing: "-0.01em" },
+    h2: { fontSize: "20px", fontWeight: 600, lineHeight: "1.3", letterSpacing: "-0.01em" },
+    h3: { fontSize: "17px", fontWeight: 600, lineHeight: "1.3", letterSpacing: "-0.01em" },
+    body: { fontSize: "15px", fontWeight: 400, lineHeight: "1.6" },
+    bodySmall: { fontSize: "14px", fontWeight: 400, lineHeight: "1.5" },
+    caption: { fontSize: "12px", fontWeight: 400, lineHeight: "1.5" },
+    tiny: { fontSize: "11px", fontWeight: 400, lineHeight: "1.4" },
+  },
+  spacing: { xs: "4px", sm: "8px", md: "16px", lg: "24px", xl: "32px", xxl: "48px" },
+  radius: { sm: "6px", md: "8px", lg: "12px", xl: "20px" },
+  buttons: {
+    primary: {
+      backgroundColor: "#D4AF37",
+      color: "#0A0A0B",
+      borderColor: "#D4AF37",
+      paddingVertical: "12px",
+      paddingHorizontal: "24px",
+      fontSize: "14px",
+      fontWeight: 600,
+      borderRadius: "6px",
+      shadow: "0px 2px 8px 0px rgba(212, 175, 55, 0.15)",
+    },
+    secondary: {
+      backgroundColor: "transparent",
+      color: "#FFFFFF",
+      borderColor: "#27272A",
+      paddingVertical: "12px",
+      paddingHorizontal: "24px",
+      fontSize: "14px",
+      fontWeight: 600,
+      borderRadius: "6px",
+    },
+    tertiary: {
+      backgroundColor: "transparent",
+      color: "#A1A1AA",
+      borderColor: "transparent",
+      paddingVertical: "12px",
+      paddingHorizontal: "24px",
+      fontSize: "14px",
+      fontWeight: 600,
+      borderRadius: "6px",
+    },
+    danger: {
+      backgroundColor: "#EF4444",
+      color: "#FFFFFF",
+      borderColor: "#EF4444",
+      paddingVertical: "12px",
+      paddingHorizontal: "24px",
+      fontSize: "14px",
+      fontWeight: 600,
+      borderRadius: "6px",
+    },
+  },
+  card: {
+    backgroundColor: "#1A1A1D",
+    borderColor: "#27272A",
+    borderRadius: "12px",
+    padding: "32px",
+  },
+  container: { maxWidth: "600px", paddingVertical: "40px", paddingHorizontal: "8px" },
+} as const;
+
+export type EmailDesignSystem = typeof emailDesignSystem;

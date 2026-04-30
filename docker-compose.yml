@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:7.0.4
+    container_name: luxero-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-luxeroadmin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-luxero_secure_pass_2024}
+      MONGO_INITDB_DATABASE: luxero
+    ports:
+      - "27018:27017"
+    volumes:
+      - luxero-mongo-data:/data/db
+      - luxero-mongo-config:/data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - luxero-network
+
+volumes:
+  luxero-mongo-data:
+    name: luxero-mongo-data
+  luxero-mongo-config:
+    name: luxero-mongo-config
+
+networks:
+  luxero-network:
+    name: luxero-network
+    driver: bridge

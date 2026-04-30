@@ -1,0 +1,43 @@
+import mongoose, { Schema } from "mongoose";
+const CompetitionSchema = new Schema({
+    slug: { type: String, required: true, unique: true, index: true },
+    title: { type: String, required: true },
+    shortDescription: { type: String },
+    description: { type: String },
+    category: { type: String, index: true },
+    status: { type: String, default: "draft", index: true },
+    prizeTitle: { type: String },
+    prizeValue: { type: Number, required: true },
+    prizeImageUrl: { type: String },
+    prizeImages: [{ type: String }],
+    prizeSpecifications: { type: Schema.Types.Mixed },
+    ticketPrice: { type: Number, required: true },
+    maxTickets: { type: Number, required: true },
+    ticketsSold: { type: Number, default: 0 },
+    maxTicketsPerUser: { type: Number, default: 100 },
+    question: { type: String },
+    questionOptions: [{ type: String }],
+    correctAnswer: { type: Number },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    drawDate: { type: Date, index: true },
+    isFeatured: { type: Boolean, default: false, index: true },
+    displayOrder: { type: Number, default: 0 },
+    isHeroFeatured: { type: Boolean, default: false },
+    heroDisplayOrder: { type: Number },
+    heroImageUrl: { type: String },
+    originalPrice: { type: Number },
+    imageUrl: { type: String },
+    currency: { type: String, default: "GBP" },
+    winnerId: { type: Schema.Types.ObjectId, ref: "Profile" },
+    winnerTicketNumber: { type: Number },
+    winnerAnnouncedAt: { type: Date },
+    isReferralReward: { type: Boolean, default: false },
+    createdBy: { type: Schema.Types.ObjectId, ref: "Profile" },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+}, { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } });
+CompetitionSchema.index({ status: 1, category: 1 });
+CompetitionSchema.index({ drawDate: 1 });
+CompetitionSchema.index({ isFeatured: 1 });
+export const Competition = mongoose.model("Competition", CompetitionSchema);
