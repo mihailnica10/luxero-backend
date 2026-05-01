@@ -1,8 +1,489 @@
 var __defProp = Object.defineProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
+
+// src/models/Category.ts
+import mongoose2, { Schema } from "mongoose";
+var CategorySchema, Category;
+var init_Category = __esm({
+  "src/models/Category.ts"() {
+    "use strict";
+    CategorySchema = new Schema(
+      {
+        slug: { type: String, required: true, unique: true, index: true },
+        name: { type: String, required: true },
+        label: { type: String, required: true },
+        iconName: { type: String, required: true, default: "Trophy" },
+        description: { type: String },
+        isActive: { type: Boolean, default: true, index: true },
+        displayOrder: { type: Number, default: 0 },
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    CategorySchema.index({ slug: 1 }, { unique: true });
+    Category = mongoose2.model("Category", CategorySchema);
+  }
+});
+
+// src/models/Competition.ts
+import mongoose3, { Schema as Schema2 } from "mongoose";
+var CompetitionSchema, Competition;
+var init_Competition = __esm({
+  "src/models/Competition.ts"() {
+    "use strict";
+    CompetitionSchema = new Schema2(
+      {
+        slug: { type: String, required: true, unique: true, index: true },
+        title: { type: String, required: true },
+        shortDescription: { type: String },
+        description: { type: String },
+        category: { type: String, index: true },
+        status: { type: String, default: "draft", index: true },
+        prizeTitle: { type: String },
+        prizeValue: { type: Number, required: true },
+        prizeImageUrl: { type: String },
+        prizeImages: [{ type: String }],
+        prizeSpecifications: { type: Schema2.Types.Mixed },
+        ticketPrice: { type: Number, required: true },
+        maxTickets: { type: Number, required: true },
+        ticketsSold: { type: Number, default: 0 },
+        maxTicketsPerUser: { type: Number, default: 100 },
+        question: { type: String },
+        questionOptions: [{ type: String }],
+        correctAnswer: { type: Number },
+        startDate: { type: Date },
+        endDate: { type: Date },
+        drawDate: { type: Date, index: true },
+        isFeatured: { type: Boolean, default: false, index: true },
+        displayOrder: { type: Number, default: 0 },
+        isHeroFeatured: { type: Boolean, default: false },
+        heroDisplayOrder: { type: Number },
+        heroImageUrl: { type: String },
+        originalPrice: { type: Number },
+        imageUrl: { type: String },
+        currency: { type: String, default: "GBP" },
+        winnerId: { type: Schema2.Types.ObjectId, ref: "Profile" },
+        winnerTicketNumber: { type: Number },
+        winnerAnnouncedAt: { type: Date },
+        isReferralReward: { type: Boolean, default: false },
+        createdBy: { type: Schema2.Types.ObjectId, ref: "Profile" },
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    CompetitionSchema.index({ status: 1, category: 1 });
+    CompetitionSchema.index({ drawDate: 1 });
+    CompetitionSchema.index({ isFeatured: 1 });
+    Competition = mongoose3.model("Competition", CompetitionSchema);
+  }
+});
+
+// src/models/Entry.ts
+import mongoose4, { Schema as Schema3 } from "mongoose";
+var EntrySchema, Entry;
+var init_Entry = __esm({
+  "src/models/Entry.ts"() {
+    "use strict";
+    EntrySchema = new Schema3(
+      {
+        userId: { type: Schema3.Types.ObjectId, ref: "Profile", required: true, index: true },
+        competitionId: { type: Schema3.Types.ObjectId, ref: "Competition", required: true, index: true },
+        orderId: { type: Schema3.Types.ObjectId, ref: "Order", index: true },
+        ticketNumbers: [{ type: Number }],
+        quantity: { type: Number, required: true },
+        answerIndex: { type: Number },
+        answerCorrect: { type: Boolean },
+        createdAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    EntrySchema.index({ userId: 1, competitionId: 1 });
+    EntrySchema.index({ orderId: 1 });
+    Entry = mongoose4.model("Entry", EntrySchema);
+  }
+});
+
+// src/models/InstantPrize.ts
+import mongoose5, { Schema as Schema4 } from "mongoose";
+var InstantPrizeSchema, InstantPrize;
+var init_InstantPrize = __esm({
+  "src/models/InstantPrize.ts"() {
+    "use strict";
+    InstantPrizeSchema = new Schema4(
+      {
+        competitionId: { type: Schema4.Types.ObjectId, ref: "Competition", required: true, index: true },
+        name: { type: String, required: true },
+        description: { type: String },
+        imageUrl: { type: String },
+        value: { type: Number },
+        totalQuantity: { type: Number, required: true, default: 1 },
+        remainingQuantity: { type: Number, required: true, default: 1 },
+        winningTicketNumbers: [{ type: Number }],
+        prizeType: { type: String, required: true, default: "direct" },
+        prizeCompetitionId: { type: Schema4.Types.ObjectId, ref: "Competition" },
+        isActive: { type: Boolean, default: true, index: true },
+        startsAt: { type: Date },
+        endsAt: { type: Date },
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    InstantPrizeSchema.index({ competitionId: 1 });
+    InstantPrizeSchema.index({ isActive: 1 });
+    InstantPrize = mongoose5.model("InstantPrize", InstantPrizeSchema);
+  }
+});
+
+// src/models/InstantPrizeWin.ts
+import mongoose6, { Schema as Schema5 } from "mongoose";
+var InstantPrizeWinSchema, InstantPrizeWin;
+var init_InstantPrizeWin = __esm({
+  "src/models/InstantPrizeWin.ts"() {
+    "use strict";
+    InstantPrizeWinSchema = new Schema5(
+      {
+        instantPrizeId: {
+          type: Schema5.Types.ObjectId,
+          ref: "InstantPrize",
+          required: true,
+          index: true
+        },
+        userId: { type: Schema5.Types.ObjectId, ref: "Profile", required: true, index: true },
+        entryId: { type: Schema5.Types.ObjectId, ref: "Entry" },
+        ticketNumber: { type: Number },
+        claimed: { type: Boolean, default: false },
+        claimedAt: { type: Date },
+        shippingAddress: {
+          addressLine1: String,
+          addressLine2: String,
+          city: String,
+          postcode: String,
+          country: String
+        },
+        wonAt: { type: Date, default: Date.now },
+        createdAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    InstantPrizeWinSchema.index({ userId: 1 });
+    InstantPrizeWinSchema.index({ instantPrizeId: 1 });
+    InstantPrizeWin = mongoose6.model(
+      "InstantPrizeWin",
+      InstantPrizeWinSchema
+    );
+  }
+});
+
+// src/models/Language.ts
+import mongoose7, { Schema as Schema6 } from "mongoose";
+var LanguageSchema, Language;
+var init_Language = __esm({
+  "src/models/Language.ts"() {
+    "use strict";
+    LanguageSchema = new Schema6(
+      {
+        code: { type: String, required: true, unique: true, index: true },
+        name: { type: String, required: true },
+        nativeName: { type: String, required: true },
+        isActive: { type: Boolean, default: true, index: true },
+        isDefault: { type: Boolean, default: false },
+        displayOrder: { type: Number, default: 0 },
+        createdAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    LanguageSchema.index({ code: 1 }, { unique: true });
+    Language = mongoose7.model("Language", LanguageSchema);
+  }
+});
+
+// src/models/Order.ts
+import mongoose8, { Schema as Schema7 } from "mongoose";
+var OrderSchema, Order;
+var init_Order = __esm({
+  "src/models/Order.ts"() {
+    "use strict";
+    OrderSchema = new Schema7(
+      {
+        orderNumber: { type: Number, required: true, unique: true },
+        userId: { type: Schema7.Types.ObjectId, ref: "Profile", required: true, index: true },
+        status: { type: String, default: "pending", index: true },
+        subtotal: { type: Number, required: true },
+        discountAmount: { type: Number, default: 0 },
+        total: { type: Number, required: true },
+        promoCodeId: { type: Schema7.Types.ObjectId, ref: "PromoCode" },
+        referralBonusTickets: { type: Number, default: 0 },
+        referralBalanceUsed: { type: Number, default: 0 },
+        stripeSessionId: { type: String, index: true },
+        stripePaymentIntentId: { type: String },
+        paidAt: { type: Date },
+        createdAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    OrderSchema.index({ userId: 1, status: 1 });
+    OrderSchema.index({ stripeSessionId: 1 });
+    Order = mongoose8.model("Order", OrderSchema);
+  }
+});
+
+// src/models/OrderItem.ts
+import mongoose9, { Schema as Schema8 } from "mongoose";
+var OrderItemSchema, OrderItem;
+var init_OrderItem = __esm({
+  "src/models/OrderItem.ts"() {
+    "use strict";
+    OrderItemSchema = new Schema8(
+      {
+        orderId: { type: Schema8.Types.ObjectId, ref: "Order", required: true, index: true },
+        competitionId: { type: Schema8.Types.ObjectId, ref: "Competition", required: true, index: true },
+        quantity: { type: Number, required: true },
+        unitPrice: { type: Number, required: true },
+        totalPrice: { type: Number, required: true },
+        ticketNumbers: [{ type: Number }],
+        answerIndex: { type: Number },
+        createdAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    OrderItemSchema.index({ orderId: 1 });
+    OrderItemSchema.index({ competitionId: 1 });
+    OrderItem = mongoose9.model("OrderItem", OrderItemSchema);
+  }
+});
+
+// src/models/Profile.ts
+import mongoose10, { Schema as Schema9 } from "mongoose";
+var ProfileSchema, Profile;
+var init_Profile = __esm({
+  "src/models/Profile.ts"() {
+    "use strict";
+    ProfileSchema = new Schema9(
+      {
+        email: { type: String, required: true, index: true },
+        fullName: { type: String },
+        avatarUrl: { type: String },
+        phone: { type: String },
+        dateOfBirth: { type: Date },
+        addressLine1: { type: String },
+        addressLine2: { type: String },
+        city: { type: String },
+        postcode: { type: String },
+        country: { type: String, default: "GB" },
+        isAdmin: { type: Boolean, default: false, index: true },
+        isVerified: { type: Boolean, default: false },
+        marketingConsent: { type: Boolean, default: false },
+        instagram: { type: String },
+        facebook: { type: String },
+        twitter: { type: String },
+        tiktok: { type: String },
+        youtube: { type: String },
+        websiteUrl: { type: String },
+        showLastName: { type: Boolean, default: false },
+        showLocation: { type: Boolean, default: false },
+        showSocials: { type: Boolean, default: false },
+        totalEntries: { type: Number, default: 0 },
+        totalSpent: { type: Number, default: 0 },
+        winsCount: { type: Number, default: 0 },
+        referralCode: { type: String, unique: true, sparse: true, index: true },
+        referredBy: { type: Schema9.Types.ObjectId, ref: "Profile", index: true },
+        referralCount: { type: Number, default: 0 },
+        referralBalance: { type: Number, default: 0 },
+        referralPayout: { type: Number, default: 0 },
+        referralTierPendingTickets: { type: Number, default: 0 },
+        referralTierAwardedTickets: { type: Number, default: 0 },
+        referralTierLastUpdated: { type: Date },
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    ProfileSchema.index({ email: 1 });
+    ProfileSchema.index({ referralCode: 1 }, { unique: true, sparse: true });
+    Profile = mongoose10.model("Profile", ProfileSchema);
+  }
+});
+
+// src/models/PromoCode.ts
+import mongoose11, { Schema as Schema10 } from "mongoose";
+var PromoCodeSchema, PromoCode;
+var init_PromoCode = __esm({
+  "src/models/PromoCode.ts"() {
+    "use strict";
+    PromoCodeSchema = new Schema10(
+      {
+        code: { type: String, required: true, unique: true, index: true },
+        discountType: { type: String, required: true },
+        discountValue: { type: Number, required: true },
+        minOrderValue: { type: Number },
+        maxUses: { type: Number },
+        currentUses: { type: Number, default: 0 },
+        maxUsesPerUser: { type: Number, default: 1 },
+        validFrom: { type: Date },
+        validUntil: { type: Date },
+        isActive: { type: Boolean, default: true, index: true },
+        createdAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    PromoCodeSchema.index({ code: 1 }, { unique: true });
+    PromoCodeSchema.index({ isActive: 1 });
+    PromoCode = mongoose11.model("PromoCode", PromoCodeSchema);
+  }
+});
+
+// src/models/ReferralPurchase.ts
+import mongoose12, { Schema as Schema11 } from "mongoose";
+var ReferralPurchaseSchema, ReferralPurchase;
+var init_ReferralPurchase = __esm({
+  "src/models/ReferralPurchase.ts"() {
+    "use strict";
+    ReferralPurchaseSchema = new Schema11(
+      {
+        referrerId: { type: Schema11.Types.ObjectId, ref: "Profile", required: true, index: true },
+        referredUserId: { type: Schema11.Types.ObjectId, ref: "Profile", required: true, index: true },
+        orderId: { type: Schema11.Types.ObjectId, ref: "Order", required: true },
+        purchasedAt: { type: Date, default: Date.now },
+        createdAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    ReferralPurchaseSchema.index({ referrerId: 1, purchasedAt: 1 });
+    ReferralPurchase = mongoose12.model(
+      "ReferralPurchase",
+      ReferralPurchaseSchema
+    );
+  }
+});
+
+// src/models/User.ts
+import bcrypt from "bcryptjs";
+import mongoose13, { Schema as Schema12 } from "mongoose";
+var UserSchema, User;
+var init_User = __esm({
+  "src/models/User.ts"() {
+    "use strict";
+    UserSchema = new Schema12(
+      {
+        email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
+        passwordHash: { type: String, required: true },
+        isAdmin: { type: Boolean, default: false },
+        isVerified: { type: Boolean, default: false },
+        verificationCode: { type: String },
+        verificationExpiry: { type: Date },
+        resetCode: { type: String },
+        resetExpiry: { type: Date }
+      },
+      { timestamps: true }
+    );
+    UserSchema.pre("save", async function() {
+      if (this.isModified("passwordHash") && !this.passwordHash.startsWith("$2")) {
+        this.passwordHash = await bcrypt.hash(this.passwordHash, 12);
+      }
+    });
+    UserSchema.methods.comparePassword = async function(password) {
+      return bcrypt.compare(password, this.passwordHash);
+    };
+    UserSchema.methods.setVerificationCode = async function(code) {
+      const hash = await bcrypt.hash(code, 10);
+      this.verificationCode = hash;
+      this.verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1e3);
+    };
+    UserSchema.methods.clearVerificationCode = function() {
+      this.verificationCode = void 0;
+      this.verificationExpiry = void 0;
+    };
+    UserSchema.methods.setResetCode = async function(code) {
+      const hash = await bcrypt.hash(code, 10);
+      this.resetCode = hash;
+      this.resetExpiry = new Date(Date.now() + 60 * 60 * 1e3);
+    };
+    UserSchema.methods.clearResetCode = function() {
+      this.resetCode = void 0;
+      this.resetExpiry = void 0;
+    };
+    User = mongoose13.model("User", UserSchema);
+  }
+});
+
+// src/models/Winner.ts
+import mongoose14, { Schema as Schema13 } from "mongoose";
+var WinnerSchema, Winner;
+var init_Winner = __esm({
+  "src/models/Winner.ts"() {
+    "use strict";
+    WinnerSchema = new Schema13(
+      {
+        competitionId: { type: Schema13.Types.ObjectId, ref: "Competition", required: true, index: true },
+        userId: { type: Schema13.Types.ObjectId, ref: "Profile", required: true, index: true },
+        entryId: { type: Schema13.Types.ObjectId, ref: "Entry" },
+        ticketNumber: { type: Number, required: true },
+        prizeTitle: { type: String },
+        prizeValue: { type: Number },
+        prizeImageUrl: { type: String },
+        displayName: { type: String },
+        location: { type: String },
+        testimonial: { type: String },
+        winnerPhotoUrl: { type: String },
+        showFullName: { type: Boolean, default: false },
+        claimed: { type: Boolean, default: false },
+        claimedAt: { type: Date },
+        drawnAt: { type: Date, default: Date.now },
+        createdAt: { type: Date, default: Date.now }
+      },
+      { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
+    );
+    WinnerSchema.index({ competitionId: 1 });
+    WinnerSchema.index({ userId: 1 });
+    Winner = mongoose14.model("Winner", WinnerSchema);
+  }
+});
+
+// src/models/index.ts
+var models_exports = {};
+__export(models_exports, {
+  Category: () => Category,
+  Competition: () => Competition,
+  Entry: () => Entry,
+  InstantPrize: () => InstantPrize,
+  InstantPrizeWin: () => InstantPrizeWin,
+  Language: () => Language,
+  Order: () => Order,
+  OrderItem: () => OrderItem,
+  Profile: () => Profile,
+  PromoCode: () => PromoCode,
+  ReferralPurchase: () => ReferralPurchase,
+  User: () => User,
+  Winner: () => Winner
+});
+var init_models = __esm({
+  "src/models/index.ts"() {
+    "use strict";
+    init_Category();
+    init_Competition();
+    init_Entry();
+    init_InstantPrize();
+    init_InstantPrizeWin();
+    init_Language();
+    init_Order();
+    init_OrderItem();
+    init_Profile();
+    init_PromoCode();
+    init_ReferralPurchase();
+    init_User();
+    init_Winner();
+  }
+});
 
 // node_modules/hono/dist/compose.js
 var compose = (middleware, onError, onNotFound) => {
@@ -2326,370 +2807,8 @@ async function requireAdmin(c, next) {
   await next();
 }
 
-// src/models/Category.ts
-import mongoose2, { Schema } from "mongoose";
-var CategorySchema = new Schema(
-  {
-    slug: { type: String, required: true, unique: true, index: true },
-    name: { type: String, required: true },
-    label: { type: String, required: true },
-    iconName: { type: String, required: true, default: "Trophy" },
-    description: { type: String },
-    isActive: { type: Boolean, default: true, index: true },
-    displayOrder: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-CategorySchema.index({ slug: 1 }, { unique: true });
-var Category = mongoose2.model("Category", CategorySchema);
-
-// src/models/Competition.ts
-import mongoose3, { Schema as Schema2 } from "mongoose";
-var CompetitionSchema = new Schema2(
-  {
-    slug: { type: String, required: true, unique: true, index: true },
-    title: { type: String, required: true },
-    shortDescription: { type: String },
-    description: { type: String },
-    category: { type: String, index: true },
-    status: { type: String, default: "draft", index: true },
-    prizeTitle: { type: String },
-    prizeValue: { type: Number, required: true },
-    prizeImageUrl: { type: String },
-    prizeImages: [{ type: String }],
-    prizeSpecifications: { type: Schema2.Types.Mixed },
-    ticketPrice: { type: Number, required: true },
-    maxTickets: { type: Number, required: true },
-    ticketsSold: { type: Number, default: 0 },
-    maxTicketsPerUser: { type: Number, default: 100 },
-    question: { type: String },
-    questionOptions: [{ type: String }],
-    correctAnswer: { type: Number },
-    startDate: { type: Date },
-    endDate: { type: Date },
-    drawDate: { type: Date, index: true },
-    isFeatured: { type: Boolean, default: false, index: true },
-    displayOrder: { type: Number, default: 0 },
-    isHeroFeatured: { type: Boolean, default: false },
-    heroDisplayOrder: { type: Number },
-    heroImageUrl: { type: String },
-    originalPrice: { type: Number },
-    imageUrl: { type: String },
-    currency: { type: String, default: "GBP" },
-    winnerId: { type: Schema2.Types.ObjectId, ref: "Profile" },
-    winnerTicketNumber: { type: Number },
-    winnerAnnouncedAt: { type: Date },
-    isReferralReward: { type: Boolean, default: false },
-    createdBy: { type: Schema2.Types.ObjectId, ref: "Profile" },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-CompetitionSchema.index({ status: 1, category: 1 });
-CompetitionSchema.index({ drawDate: 1 });
-CompetitionSchema.index({ isFeatured: 1 });
-var Competition = mongoose3.model("Competition", CompetitionSchema);
-
-// src/models/Entry.ts
-import mongoose4, { Schema as Schema3 } from "mongoose";
-var EntrySchema = new Schema3(
-  {
-    userId: { type: Schema3.Types.ObjectId, ref: "Profile", required: true, index: true },
-    competitionId: { type: Schema3.Types.ObjectId, ref: "Competition", required: true, index: true },
-    orderId: { type: Schema3.Types.ObjectId, ref: "Order", index: true },
-    ticketNumbers: [{ type: Number }],
-    quantity: { type: Number, required: true },
-    answerIndex: { type: Number },
-    answerCorrect: { type: Boolean },
-    createdAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-EntrySchema.index({ userId: 1, competitionId: 1 });
-EntrySchema.index({ orderId: 1 });
-var Entry = mongoose4.model("Entry", EntrySchema);
-
-// src/models/InstantPrize.ts
-import mongoose5, { Schema as Schema4 } from "mongoose";
-var InstantPrizeSchema = new Schema4(
-  {
-    competitionId: { type: Schema4.Types.ObjectId, ref: "Competition", required: true, index: true },
-    name: { type: String, required: true },
-    description: { type: String },
-    imageUrl: { type: String },
-    value: { type: Number },
-    totalQuantity: { type: Number, required: true, default: 1 },
-    remainingQuantity: { type: Number, required: true, default: 1 },
-    winningTicketNumbers: [{ type: Number }],
-    prizeType: { type: String, required: true, default: "direct" },
-    prizeCompetitionId: { type: Schema4.Types.ObjectId, ref: "Competition" },
-    isActive: { type: Boolean, default: true, index: true },
-    startsAt: { type: Date },
-    endsAt: { type: Date },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-InstantPrizeSchema.index({ competitionId: 1 });
-InstantPrizeSchema.index({ isActive: 1 });
-var InstantPrize = mongoose5.model("InstantPrize", InstantPrizeSchema);
-
-// src/models/InstantPrizeWin.ts
-import mongoose6, { Schema as Schema5 } from "mongoose";
-var InstantPrizeWinSchema = new Schema5(
-  {
-    instantPrizeId: {
-      type: Schema5.Types.ObjectId,
-      ref: "InstantPrize",
-      required: true,
-      index: true
-    },
-    userId: { type: Schema5.Types.ObjectId, ref: "Profile", required: true, index: true },
-    entryId: { type: Schema5.Types.ObjectId, ref: "Entry" },
-    ticketNumber: { type: Number },
-    claimed: { type: Boolean, default: false },
-    claimedAt: { type: Date },
-    shippingAddress: {
-      addressLine1: String,
-      addressLine2: String,
-      city: String,
-      postcode: String,
-      country: String
-    },
-    wonAt: { type: Date, default: Date.now },
-    createdAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-InstantPrizeWinSchema.index({ userId: 1 });
-InstantPrizeWinSchema.index({ instantPrizeId: 1 });
-var InstantPrizeWin = mongoose6.model(
-  "InstantPrizeWin",
-  InstantPrizeWinSchema
-);
-
-// src/models/Language.ts
-import mongoose7, { Schema as Schema6 } from "mongoose";
-var LanguageSchema = new Schema6(
-  {
-    code: { type: String, required: true, unique: true, index: true },
-    name: { type: String, required: true },
-    nativeName: { type: String, required: true },
-    isActive: { type: Boolean, default: true, index: true },
-    isDefault: { type: Boolean, default: false },
-    displayOrder: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-LanguageSchema.index({ code: 1 }, { unique: true });
-var Language = mongoose7.model("Language", LanguageSchema);
-
-// src/models/Order.ts
-import mongoose8, { Schema as Schema7 } from "mongoose";
-var OrderSchema = new Schema7(
-  {
-    orderNumber: { type: Number, required: true, unique: true },
-    userId: { type: Schema7.Types.ObjectId, ref: "Profile", required: true, index: true },
-    status: { type: String, default: "pending", index: true },
-    subtotal: { type: Number, required: true },
-    discountAmount: { type: Number, default: 0 },
-    total: { type: Number, required: true },
-    promoCodeId: { type: Schema7.Types.ObjectId, ref: "PromoCode" },
-    referralBonusTickets: { type: Number, default: 0 },
-    referralBalanceUsed: { type: Number, default: 0 },
-    stripeSessionId: { type: String, index: true },
-    stripePaymentIntentId: { type: String },
-    paidAt: { type: Date },
-    createdAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-OrderSchema.index({ userId: 1, status: 1 });
-OrderSchema.index({ stripeSessionId: 1 });
-var Order = mongoose8.model("Order", OrderSchema);
-
-// src/models/OrderItem.ts
-import mongoose9, { Schema as Schema8 } from "mongoose";
-var OrderItemSchema = new Schema8(
-  {
-    orderId: { type: Schema8.Types.ObjectId, ref: "Order", required: true, index: true },
-    competitionId: { type: Schema8.Types.ObjectId, ref: "Competition", required: true, index: true },
-    quantity: { type: Number, required: true },
-    unitPrice: { type: Number, required: true },
-    totalPrice: { type: Number, required: true },
-    ticketNumbers: [{ type: Number }],
-    answerIndex: { type: Number },
-    createdAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-OrderItemSchema.index({ orderId: 1 });
-OrderItemSchema.index({ competitionId: 1 });
-var OrderItem = mongoose9.model("OrderItem", OrderItemSchema);
-
-// src/models/Profile.ts
-import mongoose10, { Schema as Schema9 } from "mongoose";
-var ProfileSchema = new Schema9(
-  {
-    email: { type: String, required: true, index: true },
-    fullName: { type: String },
-    avatarUrl: { type: String },
-    phone: { type: String },
-    dateOfBirth: { type: Date },
-    addressLine1: { type: String },
-    addressLine2: { type: String },
-    city: { type: String },
-    postcode: { type: String },
-    country: { type: String, default: "GB" },
-    isAdmin: { type: Boolean, default: false, index: true },
-    isVerified: { type: Boolean, default: false },
-    marketingConsent: { type: Boolean, default: false },
-    instagram: { type: String },
-    facebook: { type: String },
-    twitter: { type: String },
-    tiktok: { type: String },
-    youtube: { type: String },
-    websiteUrl: { type: String },
-    showLastName: { type: Boolean, default: false },
-    showLocation: { type: Boolean, default: false },
-    showSocials: { type: Boolean, default: false },
-    totalEntries: { type: Number, default: 0 },
-    totalSpent: { type: Number, default: 0 },
-    winsCount: { type: Number, default: 0 },
-    referralCode: { type: String, unique: true, sparse: true, index: true },
-    referredBy: { type: Schema9.Types.ObjectId, ref: "Profile", index: true },
-    referralCount: { type: Number, default: 0 },
-    referralBalance: { type: Number, default: 0 },
-    referralPayout: { type: Number, default: 0 },
-    referralTierPendingTickets: { type: Number, default: 0 },
-    referralTierAwardedTickets: { type: Number, default: 0 },
-    referralTierLastUpdated: { type: Date },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-ProfileSchema.index({ email: 1 });
-ProfileSchema.index({ referralCode: 1 }, { unique: true, sparse: true });
-var Profile = mongoose10.model("Profile", ProfileSchema);
-
-// src/models/PromoCode.ts
-import mongoose11, { Schema as Schema10 } from "mongoose";
-var PromoCodeSchema = new Schema10(
-  {
-    code: { type: String, required: true, unique: true, index: true },
-    discountType: { type: String, required: true },
-    discountValue: { type: Number, required: true },
-    minOrderValue: { type: Number },
-    maxUses: { type: Number },
-    currentUses: { type: Number, default: 0 },
-    maxUsesPerUser: { type: Number, default: 1 },
-    validFrom: { type: Date },
-    validUntil: { type: Date },
-    isActive: { type: Boolean, default: true, index: true },
-    createdAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-PromoCodeSchema.index({ code: 1 }, { unique: true });
-PromoCodeSchema.index({ isActive: 1 });
-var PromoCode = mongoose11.model("PromoCode", PromoCodeSchema);
-
-// src/models/ReferralPurchase.ts
-import mongoose12, { Schema as Schema11 } from "mongoose";
-var ReferralPurchaseSchema = new Schema11(
-  {
-    referrerId: { type: Schema11.Types.ObjectId, ref: "Profile", required: true, index: true },
-    referredUserId: { type: Schema11.Types.ObjectId, ref: "Profile", required: true, index: true },
-    orderId: { type: Schema11.Types.ObjectId, ref: "Order", required: true },
-    purchasedAt: { type: Date, default: Date.now },
-    createdAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-ReferralPurchaseSchema.index({ referrerId: 1, purchasedAt: 1 });
-var ReferralPurchase = mongoose12.model(
-  "ReferralPurchase",
-  ReferralPurchaseSchema
-);
-
-// src/models/User.ts
-import bcrypt from "bcryptjs";
-import mongoose13, { Schema as Schema12 } from "mongoose";
-var UserSchema = new Schema12(
-  {
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
-    passwordHash: { type: String, required: true },
-    isAdmin: { type: Boolean, default: false },
-    isVerified: { type: Boolean, default: false },
-    verificationCode: { type: String },
-    verificationExpiry: { type: Date },
-    resetCode: { type: String },
-    resetExpiry: { type: Date }
-  },
-  { timestamps: true }
-);
-UserSchema.pre("save", async function() {
-  if (this.isModified("passwordHash") && !this.passwordHash.startsWith("$2")) {
-    this.passwordHash = await bcrypt.hash(this.passwordHash, 12);
-  }
-});
-UserSchema.methods.comparePassword = async function(password) {
-  return bcrypt.compare(password, this.passwordHash);
-};
-UserSchema.methods.setVerificationCode = async function(code) {
-  const hash = await bcrypt.hash(code, 10);
-  this.verificationCode = hash;
-  this.verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1e3);
-};
-UserSchema.methods.clearVerificationCode = function() {
-  this.verificationCode = void 0;
-  this.verificationExpiry = void 0;
-};
-UserSchema.methods.setResetCode = async function(code) {
-  const hash = await bcrypt.hash(code, 10);
-  this.resetCode = hash;
-  this.resetExpiry = new Date(Date.now() + 60 * 60 * 1e3);
-};
-UserSchema.methods.clearResetCode = function() {
-  this.resetCode = void 0;
-  this.resetExpiry = void 0;
-};
-var User = mongoose13.model("User", UserSchema);
-
-// src/models/Winner.ts
-import mongoose14, { Schema as Schema13 } from "mongoose";
-var WinnerSchema = new Schema13(
-  {
-    competitionId: { type: Schema13.Types.ObjectId, ref: "Competition", required: true, index: true },
-    userId: { type: Schema13.Types.ObjectId, ref: "Profile", required: true, index: true },
-    entryId: { type: Schema13.Types.ObjectId, ref: "Entry" },
-    ticketNumber: { type: Number, required: true },
-    prizeTitle: { type: String },
-    prizeValue: { type: Number },
-    prizeImageUrl: { type: String },
-    displayName: { type: String },
-    location: { type: String },
-    testimonial: { type: String },
-    winnerPhotoUrl: { type: String },
-    showFullName: { type: Boolean, default: false },
-    claimed: { type: Boolean, default: false },
-    claimedAt: { type: Date },
-    drawnAt: { type: Date, default: Date.now },
-    createdAt: { type: Date, default: Date.now }
-  },
-  { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
-);
-WinnerSchema.index({ competitionId: 1 });
-WinnerSchema.index({ userId: 1 });
-var Winner = mongoose14.model("Winner", WinnerSchema);
-
 // src/routes/admin/categories.ts
+init_models();
 var app = new Hono2();
 app.use("*", requireAdmin);
 app.get("/", async (c) => {
@@ -2766,536 +2885,7 @@ app.delete("/:id", async (c) => {
 var categories_default = app;
 
 // src/routes/admin/competitions.ts
-var app2 = new Hono2();
-app2.use("*", requireAdmin);
-app2.get("/", async (c) => {
-  try {
-    const { limit, page, skip } = parsePagination(c);
-    await db_default();
-    const query = {};
-    const status = c.req.query("status");
-    if (status) query.status = status;
-    const [competitions, total] = await Promise.all([
-      Competition.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      Competition.countDocuments(query)
-    ]);
-    return paginated(c, competitions, total, page, limit);
-  } catch (err) {
-    console.error("Error listing competitions:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app2.get("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const competition = await Competition.findById(id).lean();
-    if (!competition) {
-      return error(c, ErrorCodes.NOT_FOUND, "Competition not found", 404);
-    }
-    return success(c, competition);
-  } catch (err) {
-    console.error("Error fetching competition:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app2.post("/", async (c) => {
-  try {
-    const body = await c.req.json();
-    await db_default();
-    const competition = await Competition.create(body);
-    return success(c, competition);
-  } catch (err) {
-    console.error("Error creating competition:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app2.put("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const body = await c.req.json();
-    await db_default();
-    const competition = await Competition.findByIdAndUpdate(id, body, { new: true }).lean();
-    if (!competition) {
-      return error(c, ErrorCodes.NOT_FOUND, "Competition not found", 404);
-    }
-    return success(c, competition);
-  } catch (err) {
-    console.error("Error updating competition:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app2.delete("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const competition = await Competition.findByIdAndDelete(id);
-    if (!competition) {
-      return error(c, ErrorCodes.NOT_FOUND, "Competition not found", 404);
-    }
-    return success(c, { success: true });
-  } catch (err) {
-    console.error("Error deleting competition:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app2.post("/:id/draw", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const competition = await Competition.findById(id).lean();
-    if (!competition) {
-      return error(c, ErrorCodes.NOT_FOUND, "Competition not found", 404);
-    }
-    if (competition.status !== "ended") {
-      return error(
-        c,
-        ErrorCodes.VALIDATION_ERROR,
-        "Competition must be ended to draw a winner",
-        400
-      );
-    }
-    const entries = await Entry.find({ competitionId: id }).lean();
-    if (entries.length === 0) {
-      return error(c, ErrorCodes.VALIDATION_ERROR, "No entries found for this competition", 400);
-    }
-    const randomIndex = Math.floor(Math.random() * entries.length);
-    const winningEntry = entries[randomIndex];
-    const winner = await Winner.create({
-      competitionId: competition._id,
-      userId: winningEntry.userId,
-      entryId: winningEntry._id,
-      drawnAt: /* @__PURE__ */ new Date()
-    });
-    await Competition.findByIdAndUpdate(id, { status: "drawn" });
-    return success(c, { winner, competition, winningEntry });
-  } catch (err) {
-    console.error("Error drawing winner:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-var competitions_default = app2;
-
-// src/routes/admin/instant-prizes.ts
-var app3 = new Hono2();
-app3.use("*", requireAdmin);
-app3.get("/", async (c) => {
-  try {
-    const { limit, page, skip } = parsePagination(c);
-    await db_default();
-    const query = {};
-    const isActive = c.req.query("isActive");
-    if (isActive !== void 0) query.isActive = isActive === "true";
-    const [instantPrizes, total] = await Promise.all([
-      InstantPrize.find(query).sort({ displayOrder: 1 }).skip(skip).limit(limit).lean(),
-      InstantPrize.countDocuments(query)
-    ]);
-    return paginated(c, instantPrizes, total, page, limit);
-  } catch (err) {
-    console.error("Error listing instant prizes:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app3.get("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const instantPrize = await InstantPrize.findById(id).lean();
-    if (!instantPrize) {
-      return error(c, ErrorCodes.NOT_FOUND, "Instant prize not found", 404);
-    }
-    return success(c, instantPrize);
-  } catch (err) {
-    console.error("Error fetching instant prize:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app3.post("/", async (c) => {
-  try {
-    const body = await c.req.json();
-    await db_default();
-    const instantPrize = await InstantPrize.create(body);
-    return success(c, instantPrize);
-  } catch (err) {
-    console.error("Error creating instant prize:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app3.put("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const body = await c.req.json();
-    await db_default();
-    const instantPrize = await InstantPrize.findByIdAndUpdate(id, body, {
-      new: true
-    }).lean();
-    if (!instantPrize) {
-      return error(c, ErrorCodes.NOT_FOUND, "Instant prize not found", 404);
-    }
-    return success(c, instantPrize);
-  } catch (err) {
-    console.error("Error updating instant prize:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app3.delete("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const instantPrize = await InstantPrize.findByIdAndDelete(id);
-    if (!instantPrize) {
-      return error(c, ErrorCodes.NOT_FOUND, "Instant prize not found", 404);
-    }
-    return success(c, { success: true });
-  } catch (err) {
-    console.error("Error deleting instant prize:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-var instant_prizes_default = app3;
-
-// src/routes/admin/languages.ts
-var app4 = new Hono2();
-app4.use("*", requireAdmin);
-app4.get("/", async (c) => {
-  try {
-    const { limit, page, skip } = parsePagination(c);
-    await db_default();
-    const query = {};
-    const isActive = c.req.query("isActive");
-    if (isActive !== void 0) query.isActive = isActive === "true";
-    const [languages, total] = await Promise.all([
-      Language.find(query).sort({ displayOrder: 1 }).skip(skip).limit(limit).lean(),
-      Language.countDocuments(query)
-    ]);
-    return paginated(c, languages, total, page, limit);
-  } catch (err) {
-    console.error("Error listing languages:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app4.get("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const language = await Language.findById(id).lean();
-    if (!language) {
-      return error(c, ErrorCodes.NOT_FOUND, "Language not found", 404);
-    }
-    return success(c, language);
-  } catch (err) {
-    console.error("Error fetching language:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app4.post("/", async (c) => {
-  try {
-    const body = await c.req.json();
-    await db_default();
-    const language = await Language.create(body);
-    return success(c, language);
-  } catch (err) {
-    console.error("Error creating language:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app4.put("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const body = await c.req.json();
-    await db_default();
-    const language = await Language.findByIdAndUpdate(id, body, { new: true }).lean();
-    if (!language) {
-      return error(c, ErrorCodes.NOT_FOUND, "Language not found", 404);
-    }
-    return success(c, language);
-  } catch (err) {
-    console.error("Error updating language:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app4.delete("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const language = await Language.findByIdAndDelete(id);
-    if (!language) {
-      return error(c, ErrorCodes.NOT_FOUND, "Language not found", 404);
-    }
-    return success(c, { success: true });
-  } catch (err) {
-    console.error("Error deleting language:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-var languages_default = app4;
-
-// src/routes/admin/orders.ts
-var app5 = new Hono2();
-app5.use("*", requireAdmin);
-app5.get("/", async (c) => {
-  try {
-    const { limit, page, skip } = parsePagination(c);
-    await db_default();
-    const query = {};
-    const status = c.req.query("status");
-    const userId = c.req.query("userId");
-    if (status) query.status = status;
-    if (userId) query.userId = userId;
-    const [orders, total] = await Promise.all([
-      Order.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      Order.countDocuments(query)
-    ]);
-    return paginated(c, orders, total, page, limit);
-  } catch (err) {
-    console.error("Error listing orders:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app5.get("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const order = await Order.findById(id).lean();
-    if (!order) {
-      return error(c, ErrorCodes.NOT_FOUND, "Order not found", 404);
-    }
-    return success(c, order);
-  } catch (err) {
-    console.error("Error fetching order:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app5.patch("/:id/status", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const { status } = await c.req.json();
-    await db_default();
-    const order = await Order.findByIdAndUpdate(id, { status }, { new: true }).lean();
-    if (!order) {
-      return error(c, ErrorCodes.NOT_FOUND, "Order not found", 404);
-    }
-    return success(c, order);
-  } catch (err) {
-    console.error("Error updating order status:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app5.delete("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const order = await Order.findByIdAndDelete(id);
-    if (!order) {
-      return error(c, ErrorCodes.NOT_FOUND, "Order not found", 404);
-    }
-    return success(c, { success: true });
-  } catch (err) {
-    console.error("Error deleting order:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-var orders_default = app5;
-
-// src/routes/admin/promo-codes.ts
-var app6 = new Hono2();
-app6.use("*", requireAdmin);
-app6.get("/", async (c) => {
-  try {
-    const { limit, page, skip } = parsePagination(c);
-    await db_default();
-    const query = {};
-    const isActive = c.req.query("isActive");
-    if (isActive !== void 0) query.isActive = isActive === "true";
-    const [promoCodes, total] = await Promise.all([
-      PromoCode.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      PromoCode.countDocuments(query)
-    ]);
-    return paginated(c, promoCodes, total, page, limit);
-  } catch (err) {
-    console.error("Error listing promo codes:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app6.get("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const promoCode = await PromoCode.findById(id).lean();
-    if (!promoCode) {
-      return error(c, ErrorCodes.NOT_FOUND, "Promo code not found", 404);
-    }
-    return success(c, promoCode);
-  } catch (err) {
-    console.error("Error fetching promo code:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app6.post("/", async (c) => {
-  try {
-    const body = await c.req.json();
-    await db_default();
-    const promoCode = await PromoCode.create(body);
-    return success(c, promoCode);
-  } catch (err) {
-    console.error("Error creating promo code:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app6.put("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const body = await c.req.json();
-    await db_default();
-    const promoCode = await PromoCode.findByIdAndUpdate(id, body, { new: true }).lean();
-    if (!promoCode) {
-      return error(c, ErrorCodes.NOT_FOUND, "Promo code not found", 404);
-    }
-    return success(c, promoCode);
-  } catch (err) {
-    console.error("Error updating promo code:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-app6.delete("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const promoCode = await PromoCode.findByIdAndDelete(id);
-    if (!promoCode) {
-      return error(c, ErrorCodes.NOT_FOUND, "Promo code not found", 404);
-    }
-    return success(c, { success: true });
-  } catch (err) {
-    console.error("Error deleting promo code:", err);
-    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
-  }
-});
-var promo_codes_default = app6;
-
-// src/routes/admin/referral-purchases.ts
-var app7 = new Hono2();
-app7.get("/", async (c) => {
-  try {
-    const referredBy = c.req.query("referredBy");
-    const limit = parseInt(c.req.query("limit") || "50", 10);
-    const page = parseInt(c.req.query("page") || "1", 10);
-    const skip = (page - 1) * limit;
-    await db_default();
-    const query = {};
-    if (referredBy) query.referredBy = referredBy;
-    const [referralPurchases, total] = await Promise.all([
-      ReferralPurchase.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      ReferralPurchase.countDocuments(query)
-    ]);
-    return c.json({
-      referralPurchases,
-      pagination: { total, page, limit, pages: Math.ceil(total / limit) }
-    });
-  } catch (error2) {
-    console.error("Error listing referral purchases:", error2);
-    return c.json({ error: "Internal server error" }, 500);
-  }
-});
-app7.get("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const referralPurchase = await ReferralPurchase.findById(id).lean();
-    if (!referralPurchase) {
-      return c.json({ error: "ReferralPurchase not found" }, 404);
-    }
-    return c.json(referralPurchase);
-  } catch (error2) {
-    console.error("Error fetching referral purchase:", error2);
-    return c.json({ error: "Internal server error" }, 500);
-  }
-});
-app7.delete("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const referralPurchase = await ReferralPurchase.findByIdAndDelete(id);
-    if (!referralPurchase) {
-      return c.json({ error: "ReferralPurchase not found" }, 404);
-    }
-    return c.json({ success: true });
-  } catch (error2) {
-    console.error("Error deleting referral purchase:", error2);
-    return c.json({ error: "Internal server error" }, 500);
-  }
-});
-var referral_purchases_default = app7;
-
-// src/routes/admin/users.ts
-var app8 = new Hono2();
-app8.get("/", async (c) => {
-  try {
-    const limit = parseInt(c.req.query("limit") || "50", 10);
-    const page = parseInt(c.req.query("page") || "1", 10);
-    const skip = (page - 1) * limit;
-    await db_default();
-    const [profiles, total] = await Promise.all([
-      Profile.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      Profile.countDocuments()
-    ]);
-    return c.json({
-      profiles,
-      pagination: { total, page, limit, pages: Math.ceil(total / limit) }
-    });
-  } catch (error2) {
-    console.error("Error listing profiles:", error2);
-    return c.json({ error: "Internal server error" }, 500);
-  }
-});
-app8.get("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const profile = await Profile.findById(id).lean();
-    if (!profile) {
-      return c.json({ error: "Profile not found" }, 404);
-    }
-    return c.json(profile);
-  } catch (error2) {
-    console.error("Error fetching profile:", error2);
-    return c.json({ error: "Internal server error" }, 500);
-  }
-});
-app8.put("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const body = await c.req.json();
-    await db_default();
-    const profile = await Profile.findByIdAndUpdate(id, body, { new: true }).lean();
-    if (!profile) {
-      return c.json({ error: "Profile not found" }, 404);
-    }
-    return c.json(profile);
-  } catch (error2) {
-    console.error("Error updating profile:", error2);
-    return c.json({ error: "Internal server error" }, 500);
-  }
-});
-app8.delete("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    await db_default();
-    const profile = await Profile.findByIdAndDelete(id);
-    if (!profile) {
-      return c.json({ error: "Profile not found" }, 404);
-    }
-    return c.json({ success: true });
-  } catch (error2) {
-    console.error("Error deleting profile:", error2);
-    return c.json({ error: "Internal server error" }, 500);
-  }
-});
-var users_default = app8;
-
-// src/routes/auth.ts
 import { render } from "@react-email/render";
-import bcrypt2 from "bcryptjs";
 
 // src/email/client.ts
 import nodemailer from "nodemailer";
@@ -3358,7 +2948,9 @@ function getSmtpTransporter() {
   return smtpTransporter;
 }
 function isSmtpEnabled() {
-  return process.env.SMTP_ENABLED === "true" || !emailConfig.resend.apiKey;
+  if (process.env.SMTP_ENABLED === "true") return true;
+  if (emailConfig.resend.apiKey) return false;
+  return true;
 }
 var MAX_RETRIES = 3;
 var RETRY_DELAY_BASE = 1e3;
@@ -3422,7 +3014,7 @@ async function sendEmail(options) {
   return { success: false, error: lastError?.message || "Failed to send email after retries" };
 }
 
-// src/email/templates/email-verification.tsx
+// src/email/templates/win-notification.tsx
 import { Button, Hr, Link as Link2, Section as Section2, Text as Text2 } from "@react-email/components";
 
 // src/email/templates/base.tsx
@@ -4117,74 +3709,83 @@ var emailStyles = {
   muted: { className: "text-[12px] leading-[20px] text-[#A1A1AA]" }
 };
 
-// src/email/templates/email-verification.tsx
-function EmailVerificationEmail({ userName, code, verificationUrl }) {
-  return /* @__PURE__ */ jsxDEV(BaseEmail, { preview: `Verify your email \u2014 code: ${code}`, children: [
-    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.heading.className, children: "Verify Your Email" }),
+// src/email/templates/win-notification.tsx
+function WinNotificationEmail({
+  userName,
+  competitionName,
+  prizeTitle,
+  prizeValue,
+  claimUrl
+}) {
+  return /* @__PURE__ */ jsxDEV(BaseEmail, { preview: `Congratulations! You've won ${prizeTitle}!`, children: [
+    /* @__PURE__ */ jsxDEV(Text2, { className: "mb-[16px] text-center text-[24px] font-bold text-[#FFFFFF]", children: "You're a Winner!" }),
     /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.paragraph.className, children: [
       "Hi ",
       userName,
       ","
     ] }),
-    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.paragraph.className, children: "Welcome to Luxero! To complete your registration and start winning incredible prizes, please verify your email address using the code below." }),
-    /* @__PURE__ */ jsxDEV(Section2, { className: "my-[32px] text-center", children: [
-      /* @__PURE__ */ jsxDEV(
-        Text2,
-        {
-          className: "m-0 mb-[8px] text-[36px] font-semibold tracking-[0.2em] text-[#D4AF37]",
-          style: { fontFamily: "ui-monospace, monospace" },
-          children: code
-        }
-      ),
-      /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.muted.className, children: "Enter this code to verify your email" })
+    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.paragraph.className, children: [
+      "We're thrilled to inform you that you've won in the",
+      " ",
+      /* @__PURE__ */ jsxDEV("strong", { children: competitionName }),
+      " competition!"
     ] }),
-    /* @__PURE__ */ jsxDEV(Section2, { className: "my-[24px] text-center", children: /* @__PURE__ */ jsxDEV(Button, { href: verificationUrl, className: emailStyles.button.className, children: "Verify Email Address" }) }),
-    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.muted.className, children: [
-      "If the button above doesn't work, copy and paste this URL into your browser:",
-      /* @__PURE__ */ jsxDEV("br", {}),
-      /* @__PURE__ */ jsxDEV(Link2, { href: verificationUrl, className: "break-all text-[#D4AF37] no-underline", children: verificationUrl })
-    ] }),
-    /* @__PURE__ */ jsxDEV(Hr, { className: emailStyles.divider.className }),
     /* @__PURE__ */ jsxDEV(
       Section2,
       {
-        className: "my-[16px] rounded-[8px] border-l-4 border-[#D4AF37] bg-[#0A0A0B] px-[20px] py-[16px]",
-        style: {
-          borderLeftWidth: "4px",
-          borderLeftStyle: "solid",
-          backgroundColor: "rgba(212, 175, 55, 0.1)"
-        },
-        children: /* @__PURE__ */ jsxDEV(Text2, { className: "m-0 text-[14px] leading-[22px] text-[#A1A1AA]", children: [
-          /* @__PURE__ */ jsxDEV("strong", { className: "text-[#D4AF37]", children: "Security Notice:" }),
-          " This verification code expires in 24 hours. If you didn't create an account with Luxero, please ignore this email \u2014 your email will not be used."
-        ] })
+        className: "my-[24px] rounded-[12px] border-2 border-[#D4AF37] bg-[#0A0A0B] p-[24px] text-center",
+        style: { borderWidth: "2px", borderStyle: "solid" },
+        children: [
+          /* @__PURE__ */ jsxDEV(Text2, { className: "m-0 mb-[8px] text-[11px] uppercase tracking-widest text-[#A1A1AA]", children: "Your Prize" }),
+          /* @__PURE__ */ jsxDEV(Text2, { className: "m-0 mb-[8px] text-[20px] font-semibold text-[#D4AF37]", children: prizeTitle }),
+          /* @__PURE__ */ jsxDEV(Text2, { className: "m-0 text-[17px] text-[#FFFFFF]", children: prizeValue })
+        ]
       }
     ),
-    /* @__PURE__ */ jsxDEV(Hr, { className: emailStyles.divider.className }),
-    /* @__PURE__ */ jsxDEV(Text2, { className: "mb-[16px] text-[17px] font-semibold text-[#FFFFFF]", children: "What's Next?" }),
-    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.paragraph.className, children: [
-      /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "1. Browse Competitions" }),
-      /* @__PURE__ */ jsxDEV("br", {}),
-      "Explore luxury prizes from tech to dream experiences."
-    ] }),
-    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.paragraph.className, children: [
-      /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "2. Get Your Tickets" }),
-      /* @__PURE__ */ jsxDEV("br", {}),
-      "Answer a skill question and secure your entries."
-    ] }),
-    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.paragraph.className, children: [
-      /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "3. Win Big" }),
-      /* @__PURE__ */ jsxDEV("br", {}),
-      "Live draws, instant notifications, insured delivery."
-    ] }),
-    /* @__PURE__ */ jsxDEV(Section2, { className: "my-[24px] text-center", children: /* @__PURE__ */ jsxDEV(
+    /* @__PURE__ */ jsxDEV(Section2, { className: "my-[32px] text-center", children: /* @__PURE__ */ jsxDEV(
       Button,
       {
-        href: `${emailConfig.site.url}/competitions`,
-        className: emailStyles.button.className,
-        children: "Start Browsing Competitions"
+        href: claimUrl,
+        className: "bg-[#D4AF37] rounded-[6px] px-[32px] py-[16px] text-[17px] font-semibold text-[#0A0A0B] no-underline inline-block text-center",
+        children: "Claim Your Prize"
       }
     ) }),
+    /* @__PURE__ */ jsxDEV(
+      Section2,
+      {
+        className: "my-[24px] rounded-[12px] border border-[#27272A] bg-[#0A0A0B] p-[20px]",
+        style: { borderWidth: "1px", borderStyle: "solid" },
+        children: [
+          /* @__PURE__ */ jsxDEV(Text2, { className: "mb-[12px] text-[15px] font-semibold text-[#FFFFFF]", children: "Next Steps" }),
+          /* @__PURE__ */ jsxDEV(Text2, { className: "m-0 mb-[8px] text-[14px] leading-[22px] text-[#FFFFFF]", children: [
+            /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "1." }),
+            " Click the button above to claim your prize"
+          ] }),
+          /* @__PURE__ */ jsxDEV(Text2, { className: "m-0 mb-[8px] text-[14px] leading-[22px] text-[#FFFFFF]", children: [
+            /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "2." }),
+            " Verify your shipping address (if applicable)"
+          ] }),
+          /* @__PURE__ */ jsxDEV(Text2, { className: "m-0 text-[14px] leading-[22px] text-[#FFFFFF]", children: [
+            /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "3." }),
+            " We'll arrange delivery within 3-5 business days"
+          ] })
+        ]
+      }
+    ),
+    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.paragraph.className, children: "Congratulations once again! This is a life-changing moment \u2014 we can't wait to see you enjoy your prize!" }),
+    /* @__PURE__ */ jsxDEV(Hr, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.muted.className, children: [
+      "Have questions about your prize? Contact us at",
+      " ",
+      /* @__PURE__ */ jsxDEV(
+        Link2,
+        {
+          href: `mailto:${emailConfig.addresses.support}`,
+          className: "text-[#D4AF37] no-underline",
+          children: emailConfig.addresses.support
+        }
+      )
+    ] }),
     /* @__PURE__ */ jsxDEV(Text2, { className: emailStyles.paragraph.className, children: [
       "Good luck!",
       /* @__PURE__ */ jsxDEV("br", {}),
@@ -4193,32 +3794,576 @@ function EmailVerificationEmail({ userName, code, verificationUrl }) {
   ] });
 }
 
-// src/email/templates/password-reset.tsx
-import { Button as Button2, Hr as Hr2, Link as Link3, Section as Section3, Text as Text3 } from "@react-email/components";
-function PasswordResetEmail({ userName, code, resetUrl }) {
-  return /* @__PURE__ */ jsxDEV(BaseEmail, { preview: `Password reset requested \u2014 code: ${code}`, children: [
-    /* @__PURE__ */ jsxDEV(
-      Section3,
-      {
-        className: "mb-[24px] rounded-[8px] border-l-4 border-[#EF4444] px-[20px] py-[16px]",
-        style: {
-          borderLeftWidth: "4px",
-          borderLeftStyle: "solid",
-          backgroundColor: "rgba(239, 68, 68, 0.1)"
-        },
-        children: /* @__PURE__ */ jsxDEV(Text3, { className: "m-0 text-[14px] leading-[22px] text-[#A1A1AA]", children: [
-          /* @__PURE__ */ jsxDEV("strong", { className: "text-[#EF4444]", children: "Security Alert:" }),
-          " If you did not request a password reset, please ignore this email. Your password will remain unchanged."
-        ] })
+// src/routes/admin/competitions.ts
+init_models();
+var app2 = new Hono2();
+app2.use("*", requireAdmin);
+app2.get("/", async (c) => {
+  try {
+    const { limit, page, skip } = parsePagination(c);
+    await db_default();
+    const query = {};
+    const status = c.req.query("status");
+    if (status) query.status = status;
+    const [competitions, total] = await Promise.all([
+      Competition.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Competition.countDocuments(query)
+    ]);
+    return paginated(c, competitions, total, page, limit);
+  } catch (err) {
+    console.error("Error listing competitions:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app2.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const competition = await Competition.findById(id).lean();
+    if (!competition) {
+      return error(c, ErrorCodes.NOT_FOUND, "Competition not found", 404);
+    }
+    return success(c, competition);
+  } catch (err) {
+    console.error("Error fetching competition:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app2.post("/", async (c) => {
+  try {
+    const body = await c.req.json();
+    await db_default();
+    const competition = await Competition.create(body);
+    return success(c, competition);
+  } catch (err) {
+    console.error("Error creating competition:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app2.put("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    await db_default();
+    const competition = await Competition.findByIdAndUpdate(id, body, { new: true }).lean();
+    if (!competition) {
+      return error(c, ErrorCodes.NOT_FOUND, "Competition not found", 404);
+    }
+    return success(c, competition);
+  } catch (err) {
+    console.error("Error updating competition:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app2.delete("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const competition = await Competition.findByIdAndDelete(id);
+    if (!competition) {
+      return error(c, ErrorCodes.NOT_FOUND, "Competition not found", 404);
+    }
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting competition:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app2.post("/:id/draw", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const competition = await Competition.findById(id).lean();
+    if (!competition) {
+      return error(c, ErrorCodes.NOT_FOUND, "Competition not found", 404);
+    }
+    if (competition.status !== "ended") {
+      return error(
+        c,
+        ErrorCodes.VALIDATION_ERROR,
+        "Competition must be ended to draw a winner",
+        400
+      );
+    }
+    const entries = await Entry.find({ competitionId: id }).lean();
+    if (entries.length === 0) {
+      return error(c, ErrorCodes.VALIDATION_ERROR, "No entries found for this competition", 400);
+    }
+    const randomIndex = Math.floor(Math.random() * entries.length);
+    const winningEntry = entries[randomIndex];
+    const winner = await Winner.create({
+      competitionId: competition._id,
+      userId: winningEntry.userId,
+      entryId: winningEntry._id,
+      drawnAt: /* @__PURE__ */ new Date()
+    });
+    await Competition.findByIdAndUpdate(id, { status: "drawn" });
+    (async () => {
+      try {
+        const winningProfile = await (await Promise.resolve().then(() => (init_models(), models_exports))).Profile.findById(winningEntry.userId).lean();
+        if (!winningProfile?.email) return;
+        const userName = winningProfile.fullName || winningProfile.email.split("@")[0];
+        const claimUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/dashboard/wins`;
+        const emailHtml = await render(
+          WinNotificationEmail({
+            userName,
+            competitionName: competition.title,
+            prizeTitle: competition.prizeTitle || competition.title,
+            prizeValue: `\xA3${(competition.prizeValue || 0).toLocaleString()}`,
+            claimUrl
+          })
+        );
+        await sendEmail({
+          to: winningProfile.email,
+          subject: `Congratulations! You've won ${competition.prizeTitle || competition.title}!`,
+          html: emailHtml
+        });
+      } catch (emailErr) {
+        console.error("Failed to send win notification email:", emailErr);
       }
-    ),
-    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.heading.className, children: "Reset Your Password" }),
+    })();
+    return success(c, { winner, competition, winningEntry });
+  } catch (err) {
+    console.error("Error drawing winner:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+var competitions_default = app2;
+
+// src/routes/admin/instant-prizes.ts
+init_models();
+var app3 = new Hono2();
+app3.use("*", requireAdmin);
+app3.get("/", async (c) => {
+  try {
+    const { limit, page, skip } = parsePagination(c);
+    await db_default();
+    const query = {};
+    const isActive = c.req.query("isActive");
+    if (isActive !== void 0) query.isActive = isActive === "true";
+    const [instantPrizes, total] = await Promise.all([
+      InstantPrize.find(query).sort({ displayOrder: 1 }).skip(skip).limit(limit).lean(),
+      InstantPrize.countDocuments(query)
+    ]);
+    return paginated(c, instantPrizes, total, page, limit);
+  } catch (err) {
+    console.error("Error listing instant prizes:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app3.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const instantPrize = await InstantPrize.findById(id).lean();
+    if (!instantPrize) {
+      return error(c, ErrorCodes.NOT_FOUND, "Instant prize not found", 404);
+    }
+    return success(c, instantPrize);
+  } catch (err) {
+    console.error("Error fetching instant prize:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app3.post("/", async (c) => {
+  try {
+    const body = await c.req.json();
+    await db_default();
+    const instantPrize = await InstantPrize.create(body);
+    return success(c, instantPrize);
+  } catch (err) {
+    console.error("Error creating instant prize:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app3.put("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    await db_default();
+    const instantPrize = await InstantPrize.findByIdAndUpdate(id, body, {
+      new: true
+    }).lean();
+    if (!instantPrize) {
+      return error(c, ErrorCodes.NOT_FOUND, "Instant prize not found", 404);
+    }
+    return success(c, instantPrize);
+  } catch (err) {
+    console.error("Error updating instant prize:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app3.delete("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const instantPrize = await InstantPrize.findByIdAndDelete(id);
+    if (!instantPrize) {
+      return error(c, ErrorCodes.NOT_FOUND, "Instant prize not found", 404);
+    }
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting instant prize:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+var instant_prizes_default = app3;
+
+// src/routes/admin/languages.ts
+init_models();
+var app4 = new Hono2();
+app4.use("*", requireAdmin);
+app4.get("/", async (c) => {
+  try {
+    const { limit, page, skip } = parsePagination(c);
+    await db_default();
+    const query = {};
+    const isActive = c.req.query("isActive");
+    if (isActive !== void 0) query.isActive = isActive === "true";
+    const [languages, total] = await Promise.all([
+      Language.find(query).sort({ displayOrder: 1 }).skip(skip).limit(limit).lean(),
+      Language.countDocuments(query)
+    ]);
+    return paginated(c, languages, total, page, limit);
+  } catch (err) {
+    console.error("Error listing languages:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app4.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const language = await Language.findById(id).lean();
+    if (!language) {
+      return error(c, ErrorCodes.NOT_FOUND, "Language not found", 404);
+    }
+    return success(c, language);
+  } catch (err) {
+    console.error("Error fetching language:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app4.post("/", async (c) => {
+  try {
+    const body = await c.req.json();
+    await db_default();
+    const language = await Language.create(body);
+    return success(c, language);
+  } catch (err) {
+    console.error("Error creating language:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app4.put("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    await db_default();
+    const language = await Language.findByIdAndUpdate(id, body, { new: true }).lean();
+    if (!language) {
+      return error(c, ErrorCodes.NOT_FOUND, "Language not found", 404);
+    }
+    return success(c, language);
+  } catch (err) {
+    console.error("Error updating language:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app4.delete("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const language = await Language.findByIdAndDelete(id);
+    if (!language) {
+      return error(c, ErrorCodes.NOT_FOUND, "Language not found", 404);
+    }
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting language:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+var languages_default = app4;
+
+// src/routes/admin/orders.ts
+init_models();
+var app5 = new Hono2();
+app5.use("*", requireAdmin);
+app5.get("/", async (c) => {
+  try {
+    const { limit, page, skip } = parsePagination(c);
+    await db_default();
+    const query = {};
+    const status = c.req.query("status");
+    const userId = c.req.query("userId");
+    if (status) query.status = status;
+    if (userId) query.userId = userId;
+    const [orders, total] = await Promise.all([
+      Order.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Order.countDocuments(query)
+    ]);
+    return paginated(c, orders, total, page, limit);
+  } catch (err) {
+    console.error("Error listing orders:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app5.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const order = await Order.findById(id).lean();
+    if (!order) {
+      return error(c, ErrorCodes.NOT_FOUND, "Order not found", 404);
+    }
+    return success(c, order);
+  } catch (err) {
+    console.error("Error fetching order:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app5.patch("/:id/status", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const { status } = await c.req.json();
+    await db_default();
+    const order = await Order.findByIdAndUpdate(id, { status }, { new: true }).lean();
+    if (!order) {
+      return error(c, ErrorCodes.NOT_FOUND, "Order not found", 404);
+    }
+    return success(c, order);
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app5.delete("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const order = await Order.findByIdAndDelete(id);
+    if (!order) {
+      return error(c, ErrorCodes.NOT_FOUND, "Order not found", 404);
+    }
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting order:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+var orders_default = app5;
+
+// src/routes/admin/promo-codes.ts
+init_models();
+var app6 = new Hono2();
+app6.use("*", requireAdmin);
+app6.get("/", async (c) => {
+  try {
+    const { limit, page, skip } = parsePagination(c);
+    await db_default();
+    const query = {};
+    const isActive = c.req.query("isActive");
+    if (isActive !== void 0) query.isActive = isActive === "true";
+    const [promoCodes, total] = await Promise.all([
+      PromoCode.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      PromoCode.countDocuments(query)
+    ]);
+    return paginated(c, promoCodes, total, page, limit);
+  } catch (err) {
+    console.error("Error listing promo codes:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app6.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const promoCode = await PromoCode.findById(id).lean();
+    if (!promoCode) {
+      return error(c, ErrorCodes.NOT_FOUND, "Promo code not found", 404);
+    }
+    return success(c, promoCode);
+  } catch (err) {
+    console.error("Error fetching promo code:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app6.post("/", async (c) => {
+  try {
+    const body = await c.req.json();
+    await db_default();
+    const promoCode = await PromoCode.create(body);
+    return success(c, promoCode);
+  } catch (err) {
+    console.error("Error creating promo code:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app6.put("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    await db_default();
+    const promoCode = await PromoCode.findByIdAndUpdate(id, body, { new: true }).lean();
+    if (!promoCode) {
+      return error(c, ErrorCodes.NOT_FOUND, "Promo code not found", 404);
+    }
+    return success(c, promoCode);
+  } catch (err) {
+    console.error("Error updating promo code:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app6.delete("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const promoCode = await PromoCode.findByIdAndDelete(id);
+    if (!promoCode) {
+      return error(c, ErrorCodes.NOT_FOUND, "Promo code not found", 404);
+    }
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting promo code:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+var promo_codes_default = app6;
+
+// src/routes/admin/referral-purchases.ts
+init_models();
+var app7 = new Hono2();
+app7.use("*", requireAdmin);
+app7.get("/", async (c) => {
+  try {
+    const referredBy = c.req.query("referredBy");
+    const limit = parseInt(c.req.query("limit") || "50", 10);
+    const page = parseInt(c.req.query("page") || "1", 10);
+    const skip = (page - 1) * limit;
+    await db_default();
+    const query = {};
+    if (referredBy) query.referredBy = referredBy;
+    const [referralPurchases, total] = await Promise.all([
+      ReferralPurchase.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      ReferralPurchase.countDocuments(query)
+    ]);
+    return success(c, { referralPurchases, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) {
+    console.error("Error listing referral purchases:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app7.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const referralPurchase = await ReferralPurchase.findById(id).lean();
+    if (!referralPurchase) {
+      return error(c, ErrorCodes.NOT_FOUND, "ReferralPurchase not found", 404);
+    }
+    return success(c, referralPurchase);
+  } catch (err) {
+    console.error("Error fetching referral purchase:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app7.delete("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const referralPurchase = await ReferralPurchase.findByIdAndDelete(id);
+    if (!referralPurchase) {
+      return error(c, ErrorCodes.NOT_FOUND, "ReferralPurchase not found", 404);
+    }
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting referral purchase:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+var referral_purchases_default = app7;
+
+// src/routes/admin/users.ts
+init_models();
+var app8 = new Hono2();
+app8.use("*", requireAdmin);
+app8.get("/", async (c) => {
+  try {
+    const limit = parseInt(c.req.query("limit") || "50", 10);
+    const page = parseInt(c.req.query("page") || "1", 10);
+    const skip = (page - 1) * limit;
+    await db_default();
+    const [profiles, total] = await Promise.all([
+      Profile.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Profile.countDocuments()
+    ]);
+    return success(c, { profiles, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) {
+    console.error("Error listing profiles:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app8.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const profile = await Profile.findById(id).lean();
+    if (!profile) {
+      return error(c, ErrorCodes.NOT_FOUND, "Profile not found", 404);
+    }
+    return success(c, profile);
+  } catch (err) {
+    console.error("Error fetching profile:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app8.put("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    await db_default();
+    const profile = await Profile.findByIdAndUpdate(id, body, { new: true }).lean();
+    if (!profile) {
+      return error(c, ErrorCodes.NOT_FOUND, "Profile not found", 404);
+    }
+    return success(c, profile);
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+app8.delete("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await db_default();
+    const profile = await Profile.findByIdAndDelete(id);
+    if (!profile) {
+      return error(c, ErrorCodes.NOT_FOUND, "Profile not found", 404);
+    }
+    return success(c, { success: true });
+  } catch (err) {
+    console.error("Error deleting profile:", err);
+    return error(c, ErrorCodes.INTERNAL_ERROR, "Internal server error", 500);
+  }
+});
+var users_default = app8;
+
+// src/routes/auth.ts
+import { render as render2 } from "@react-email/render";
+import bcrypt2 from "bcryptjs";
+
+// src/email/templates/email-verification.tsx
+import { Button as Button2, Hr as Hr2, Link as Link3, Section as Section3, Text as Text3 } from "@react-email/components";
+function EmailVerificationEmail({ userName, code, verificationUrl }) {
+  return /* @__PURE__ */ jsxDEV(BaseEmail, { preview: `Verify your email \u2014 code: ${code}`, children: [
+    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.heading.className, children: "Verify Your Email" }),
     /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: [
       "Hi ",
       userName,
       ","
     ] }),
-    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: "We received a request to reset your Luxero account password. Use the code below to set a new password." }),
+    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: "Welcome to Luxero! To complete your registration and start winning incredible prizes, please verify your email address using the code below." }),
     /* @__PURE__ */ jsxDEV(Section3, { className: "my-[32px] text-center", children: [
       /* @__PURE__ */ jsxDEV(
         Text3,
@@ -4228,17 +4373,109 @@ function PasswordResetEmail({ userName, code, resetUrl }) {
           children: code
         }
       ),
-      /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.muted.className, children: "Enter this code to reset your password" })
+      /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.muted.className, children: "Enter this code to verify your email" })
     ] }),
-    /* @__PURE__ */ jsxDEV(Section3, { className: "my-[24px] text-center", children: /* @__PURE__ */ jsxDEV(Button2, { href: resetUrl, className: emailStyles.button.className, children: "Reset Password" }) }),
+    /* @__PURE__ */ jsxDEV(Section3, { className: "my-[24px] text-center", children: /* @__PURE__ */ jsxDEV(Button2, { href: verificationUrl, className: emailStyles.button.className, children: "Verify Email Address" }) }),
     /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.muted.className, children: [
       "If the button above doesn't work, copy and paste this URL into your browser:",
       /* @__PURE__ */ jsxDEV("br", {}),
-      /* @__PURE__ */ jsxDEV(Link3, { href: resetUrl, className: "break-all text-[#D4AF37] no-underline", children: resetUrl })
+      /* @__PURE__ */ jsxDEV(Link3, { href: verificationUrl, className: "break-all text-[#D4AF37] no-underline", children: verificationUrl })
     ] }),
     /* @__PURE__ */ jsxDEV(Hr2, { className: emailStyles.divider.className }),
     /* @__PURE__ */ jsxDEV(
       Section3,
+      {
+        className: "my-[16px] rounded-[8px] border-l-4 border-[#D4AF37] bg-[#0A0A0B] px-[20px] py-[16px]",
+        style: {
+          borderLeftWidth: "4px",
+          borderLeftStyle: "solid",
+          backgroundColor: "rgba(212, 175, 55, 0.1)"
+        },
+        children: /* @__PURE__ */ jsxDEV(Text3, { className: "m-0 text-[14px] leading-[22px] text-[#A1A1AA]", children: [
+          /* @__PURE__ */ jsxDEV("strong", { className: "text-[#D4AF37]", children: "Security Notice:" }),
+          " This verification code expires in 24 hours. If you didn't create an account with Luxero, please ignore this email \u2014 your email will not be used."
+        ] })
+      }
+    ),
+    /* @__PURE__ */ jsxDEV(Hr2, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Text3, { className: "mb-[16px] text-[17px] font-semibold text-[#FFFFFF]", children: "What's Next?" }),
+    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: [
+      /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "1. Browse Competitions" }),
+      /* @__PURE__ */ jsxDEV("br", {}),
+      "Explore luxury prizes from tech to dream experiences."
+    ] }),
+    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: [
+      /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "2. Get Your Tickets" }),
+      /* @__PURE__ */ jsxDEV("br", {}),
+      "Answer a skill question and secure your entries."
+    ] }),
+    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: [
+      /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "3. Win Big" }),
+      /* @__PURE__ */ jsxDEV("br", {}),
+      "Live draws, instant notifications, insured delivery."
+    ] }),
+    /* @__PURE__ */ jsxDEV(Section3, { className: "my-[24px] text-center", children: /* @__PURE__ */ jsxDEV(
+      Button2,
+      {
+        href: `${emailConfig.site.url}/competitions`,
+        className: emailStyles.button.className,
+        children: "Start Browsing Competitions"
+      }
+    ) }),
+    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: [
+      "Good luck!",
+      /* @__PURE__ */ jsxDEV("br", {}),
+      "The Luxero Team"
+    ] })
+  ] });
+}
+
+// src/email/templates/password-reset.tsx
+import { Button as Button3, Hr as Hr3, Link as Link4, Section as Section4, Text as Text4 } from "@react-email/components";
+function PasswordResetEmail({ userName, code, resetUrl }) {
+  return /* @__PURE__ */ jsxDEV(BaseEmail, { preview: `Password reset requested \u2014 code: ${code}`, children: [
+    /* @__PURE__ */ jsxDEV(
+      Section4,
+      {
+        className: "mb-[24px] rounded-[8px] border-l-4 border-[#EF4444] px-[20px] py-[16px]",
+        style: {
+          borderLeftWidth: "4px",
+          borderLeftStyle: "solid",
+          backgroundColor: "rgba(239, 68, 68, 0.1)"
+        },
+        children: /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 text-[14px] leading-[22px] text-[#A1A1AA]", children: [
+          /* @__PURE__ */ jsxDEV("strong", { className: "text-[#EF4444]", children: "Security Alert:" }),
+          " If you did not request a password reset, please ignore this email. Your password will remain unchanged."
+        ] })
+      }
+    ),
+    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.heading.className, children: "Reset Your Password" }),
+    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.paragraph.className, children: [
+      "Hi ",
+      userName,
+      ","
+    ] }),
+    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.paragraph.className, children: "We received a request to reset your Luxero account password. Use the code below to set a new password." }),
+    /* @__PURE__ */ jsxDEV(Section4, { className: "my-[32px] text-center", children: [
+      /* @__PURE__ */ jsxDEV(
+        Text4,
+        {
+          className: "m-0 mb-[8px] text-[36px] font-semibold tracking-[0.2em] text-[#D4AF37]",
+          style: { fontFamily: "ui-monospace, monospace" },
+          children: code
+        }
+      ),
+      /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.muted.className, children: "Enter this code to reset your password" })
+    ] }),
+    /* @__PURE__ */ jsxDEV(Section4, { className: "my-[24px] text-center", children: /* @__PURE__ */ jsxDEV(Button3, { href: resetUrl, className: emailStyles.button.className, children: "Reset Password" }) }),
+    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.muted.className, children: [
+      "If the button above doesn't work, copy and paste this URL into your browser:",
+      /* @__PURE__ */ jsxDEV("br", {}),
+      /* @__PURE__ */ jsxDEV(Link4, { href: resetUrl, className: "break-all text-[#D4AF37] no-underline", children: resetUrl })
+    ] }),
+    /* @__PURE__ */ jsxDEV(Hr3, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(
+      Section4,
       {
         className: "my-[16px] rounded-[8px] border-l-4 border-[#D4AF37] px-[20px] py-[16px]",
         style: {
@@ -4246,29 +4483,29 @@ function PasswordResetEmail({ userName, code, resetUrl }) {
           borderLeftStyle: "solid",
           backgroundColor: "rgba(212, 175, 55, 0.1)"
         },
-        children: /* @__PURE__ */ jsxDEV(Text3, { className: "m-0 text-[14px] leading-[22px] text-[#A1A1AA]", children: [
+        children: /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 text-[14px] leading-[22px] text-[#A1A1AA]", children: [
           /* @__PURE__ */ jsxDEV("strong", { className: "text-[#D4AF37]", children: "Time-Sensitive:" }),
           " This reset code expires in 1 hour. After that, you'll need to request a new one."
         ] })
       }
     ),
-    /* @__PURE__ */ jsxDEV(Hr2, { className: emailStyles.divider.className }),
-    /* @__PURE__ */ jsxDEV(Text3, { className: "mb-[16px] text-[17px] font-semibold text-[#FFFFFF]", children: "Security Tips" }),
-    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: [
+    /* @__PURE__ */ jsxDEV(Hr3, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Text4, { className: "mb-[16px] text-[17px] font-semibold text-[#FFFFFF]", children: "Security Tips" }),
+    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.paragraph.className, children: [
       /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "Use a strong password" }),
       /* @__PURE__ */ jsxDEV("br", {}),
       "At least 8 characters with a mix of letters, numbers, and symbols."
     ] }),
-    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: [
+    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.paragraph.className, children: [
       /* @__PURE__ */ jsxDEV("span", { className: "font-semibold text-[#D4AF37]", children: "Don't reuse passwords" }),
       /* @__PURE__ */ jsxDEV("br", {}),
       "Use a unique password for your Luxero account."
     ] }),
-    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.muted.className, children: [
+    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.muted.className, children: [
       "Need help? Contact our support team at",
       " ",
       /* @__PURE__ */ jsxDEV(
-        Link3,
+        Link4,
         {
           href: `mailto:${emailConfig.addresses.support}`,
           className: "text-[#D4AF37] no-underline",
@@ -4276,7 +4513,7 @@ function PasswordResetEmail({ userName, code, resetUrl }) {
         }
       )
     ] }),
-    /* @__PURE__ */ jsxDEV(Text3, { className: emailStyles.paragraph.className, children: [
+    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.paragraph.className, children: [
       "Stay secure,",
       /* @__PURE__ */ jsxDEV("br", {}),
       "The Luxero Team"
@@ -4285,6 +4522,7 @@ function PasswordResetEmail({ userName, code, resetUrl }) {
 }
 
 // src/routes/auth.ts
+init_models();
 var app9 = new Hono2();
 app9.post("/register", async (c) => {
   try {
@@ -4316,7 +4554,7 @@ app9.post("/register", async (c) => {
     const userName = fullName || email.split("@")[0];
     const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/auth/verify-email?email=${encodeURIComponent(email)}&code=${code}`;
     try {
-      const emailHtml = await render(EmailVerificationEmail({ userName, code, verificationUrl }));
+      const emailHtml = await render2(EmailVerificationEmail({ userName, code, verificationUrl }));
       await sendEmail({
         to: email.toLowerCase(),
         subject: "Verify your email \u2014 Luxero",
@@ -4430,7 +4668,7 @@ app9.post("/resend-verification", async (c) => {
     }
     const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/auth/verify-email?email=${encodeURIComponent(email)}&code=${code}`;
     try {
-      const emailHtml = await render(EmailVerificationEmail({ userName, code, verificationUrl }));
+      const emailHtml = await render2(EmailVerificationEmail({ userName, code, verificationUrl }));
       await sendEmail({
         to: email.toLowerCase(),
         subject: "Resend: Verify your email \u2014 Luxero",
@@ -4467,7 +4705,7 @@ app9.post("/forgot-password", async (c) => {
     }
     const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/auth/reset-password?email=${encodeURIComponent(email)}&code=${code}`;
     try {
-      const emailHtml = await render(PasswordResetEmail({ userName, code, resetUrl }));
+      const emailHtml = await render2(PasswordResetEmail({ userName, code, resetUrl }));
       await sendEmail({
         to: email.toLowerCase(),
         subject: "Reset your password \u2014 Luxero",
@@ -4555,6 +4793,7 @@ app9.get("/me", async (c) => {
 var auth_default = app9;
 
 // src/routes/categories.ts
+init_models();
 var app10 = new Hono2();
 app10.get("/", async (c) => {
   try {
@@ -4569,6 +4808,7 @@ app10.get("/", async (c) => {
 var categories_default2 = app10;
 
 // src/routes/competitions.ts
+init_models();
 var app11 = new Hono2();
 app11.get("/", async (c) => {
   try {
@@ -4672,37 +4912,37 @@ app11.get("/categories", async (c) => {
 var competitions_default2 = app11;
 
 // src/routes/contact.ts
-import { render as render2 } from "@react-email/render";
+import { render as render3 } from "@react-email/render";
 
 // src/email/templates/contact-notification.tsx
-import { Hr as Hr3, Link as Link4, Section as Section4, Text as Text4 } from "@react-email/components";
+import { Hr as Hr4, Link as Link5, Section as Section5, Text as Text5 } from "@react-email/components";
 function ContactNotificationEmail({ name, email, subject, message, submittedAt }) {
   return /* @__PURE__ */ jsxDEV(BaseEmail, { preview: `New contact form submission from ${name}`, children: [
-    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.heading.className, children: "New Contact Form Submission" }),
-    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.paragraph.className, children: "A new message has been submitted through the contact form on Luxero.win." }),
-    /* @__PURE__ */ jsxDEV(Hr3, { className: emailStyles.divider.className }),
-    /* @__PURE__ */ jsxDEV(Section4, { className: "mb-[16px]", children: [
-      /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "From:" }),
-      /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 mb-[16px] text-[15px] text-[#FFFFFF]", children: name }),
-      /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Email:" }),
-      /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 mb-[16px] text-[15px]", children: /* @__PURE__ */ jsxDEV(Link4, { href: `mailto:${email}`, className: "text-[#D4AF37] no-underline", children: email }) }),
-      /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Subject:" }),
-      /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 mb-[16px] text-[15px] text-[#FFFFFF]", children: subject }),
-      /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Submitted:" }),
-      /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 text-[15px] text-[#FFFFFF]", children: submittedAt })
+    /* @__PURE__ */ jsxDEV(Text5, { className: emailStyles.heading.className, children: "New Contact Form Submission" }),
+    /* @__PURE__ */ jsxDEV(Text5, { className: emailStyles.paragraph.className, children: "A new message has been submitted through the contact form on Luxero.win." }),
+    /* @__PURE__ */ jsxDEV(Hr4, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Section5, { className: "mb-[16px]", children: [
+      /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "From:" }),
+      /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 mb-[16px] text-[15px] text-[#FFFFFF]", children: name }),
+      /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Email:" }),
+      /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 mb-[16px] text-[15px]", children: /* @__PURE__ */ jsxDEV(Link5, { href: `mailto:${email}`, className: "text-[#D4AF37] no-underline", children: email }) }),
+      /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Subject:" }),
+      /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 mb-[16px] text-[15px] text-[#FFFFFF]", children: subject }),
+      /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Submitted:" }),
+      /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 text-[15px] text-[#FFFFFF]", children: submittedAt })
     ] }),
-    /* @__PURE__ */ jsxDEV(Hr3, { className: emailStyles.divider.className }),
-    /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 mb-[8px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Message:" }),
+    /* @__PURE__ */ jsxDEV(Hr4, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 mb-[8px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Message:" }),
     /* @__PURE__ */ jsxDEV(
-      Section4,
+      Section5,
       {
         className: "rounded-[12px] border border-[#27272A] bg-[#0A0A0B] p-[16px]",
         style: { borderWidth: "1px", borderStyle: "solid" },
-        children: /* @__PURE__ */ jsxDEV(Text4, { className: "m-0 whitespace-pre-wrap text-[14px] leading-[22px] text-[#FFFFFF]", children: message })
+        children: /* @__PURE__ */ jsxDEV(Text5, { className: "m-0 whitespace-pre-wrap text-[14px] leading-[22px] text-[#FFFFFF]", children: message })
       }
     ),
-    /* @__PURE__ */ jsxDEV(Hr3, { className: emailStyles.divider.className }),
-    /* @__PURE__ */ jsxDEV(Text4, { className: emailStyles.muted.className, children: "Reply directly to this email to respond to the customer, or click the email address above." })
+    /* @__PURE__ */ jsxDEV(Hr4, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Text5, { className: emailStyles.muted.className, children: "Reply directly to this email to respond to the customer, or click the email address above." })
   ] });
 }
 
@@ -4723,7 +4963,7 @@ app12.post("/", async (c) => {
       minute: "2-digit",
       timeZoneName: "short"
     });
-    const emailHtml = await render2(
+    const emailHtml = await render3(
       ContactNotificationEmail({ name, email, subject, message, submittedAt })
     );
     await sendEmail({
@@ -4887,10 +5127,19 @@ app14.get("/", async (c) => {
   const items = FAQ_DATA[category] || FAQ_DATA.general;
   return success(c, items);
 });
+app14.get("/categories", async (c) => {
+  const categories = [
+    { id: "general", name: "General" },
+    { id: "payment", name: "Payment" },
+    { id: "delivery", name: "Shipping & Delivery" }
+  ];
+  return success(c, categories);
+});
 var faq_default = app14;
 
 // src/routes/me/entries.ts
 import mongoose15 from "mongoose";
+init_models();
 var app15 = new Hono2();
 app15.use("*", auth);
 app15.get("/", async (c) => {
@@ -4929,6 +5178,7 @@ var entries_default = app15;
 
 // src/routes/me/orders.ts
 import mongoose16 from "mongoose";
+init_models();
 var app16 = new Hono2();
 app16.use("*", auth);
 app16.get("/", async (c) => {
@@ -4968,6 +5218,7 @@ var orders_default2 = app16;
 
 // src/routes/me/profile.ts
 import mongoose17 from "mongoose";
+init_models();
 var app17 = new Hono2();
 app17.use("*", auth);
 app17.get("/", async (c) => {
@@ -5076,6 +5327,7 @@ var profile_default = app17;
 
 // src/routes/me/referrals.ts
 import mongoose18 from "mongoose";
+init_models();
 var app18 = new Hono2();
 app18.use("*", auth);
 app18.get("/", async (c) => {
@@ -5129,6 +5381,136 @@ app18.get("/", async (c) => {
 var referrals_default = app18;
 
 // src/routes/payments.ts
+import { render as render4 } from "@react-email/render";
+
+// src/email/templates/order-confirmation.tsx
+import { Button as Button4, Hr as Hr5, Link as Link6, Section as Section6, Text as Text6 } from "@react-email/components";
+function OrderConfirmationEmail({
+  userName,
+  orderId,
+  orderDate,
+  items,
+  subtotal,
+  discount,
+  total
+}) {
+  return /* @__PURE__ */ jsxDEV(BaseEmail, { preview: `Your Luxero order #${orderId} is confirmed!`, children: [
+    /* @__PURE__ */ jsxDEV(Text6, { className: emailStyles.heading.className, children: "Order Confirmed!" }),
+    /* @__PURE__ */ jsxDEV(Text6, { className: emailStyles.paragraph.className, children: [
+      "Hi ",
+      userName,
+      ","
+    ] }),
+    /* @__PURE__ */ jsxDEV(Text6, { className: emailStyles.paragraph.className, children: "Thank you for your order! Your tickets have been secured and you're now entered into the competition. Good luck!" }),
+    /* @__PURE__ */ jsxDEV(
+      Section6,
+      {
+        className: "mb-[16px] rounded-[12px] border border-[#27272A] bg-[#0A0A0B] p-[20px]",
+        style: { borderWidth: "1px", borderStyle: "solid" },
+        children: [
+          /* @__PURE__ */ jsxDEV(Text6, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Order Number" }),
+          /* @__PURE__ */ jsxDEV(Text6, { className: "m-0 mb-[16px] text-[15px] font-semibold text-[#FFFFFF]", children: [
+            "#",
+            orderId
+          ] }),
+          /* @__PURE__ */ jsxDEV(Text6, { className: "m-0 mb-[4px] text-[11px] uppercase tracking-wide font-semibold text-[#A1A1AA]", children: "Order Date" }),
+          /* @__PURE__ */ jsxDEV(Text6, { className: "m-0 text-[15px] font-semibold text-[#FFFFFF]", children: orderDate })
+        ]
+      }
+    ),
+    /* @__PURE__ */ jsxDEV(Hr5, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Text6, { className: "mb-[16px] text-[17px] font-semibold text-[#FFFFFF]", children: "Order Details" }),
+    items.map((item, index) => /* @__PURE__ */ jsxDEV(
+      Section6,
+      {
+        className: "mb-[12px] rounded-[12px] border border-[#27272A] bg-[#0A0A0B] p-[16px]",
+        style: { borderWidth: "1px", borderStyle: "solid" },
+        children: [
+          /* @__PURE__ */ jsxDEV(Text6, { className: "m-0 mb-[8px] text-[15px] font-semibold text-[#FFFFFF]", children: item.competitionTitle }),
+          /* @__PURE__ */ jsxDEV(Text6, { className: "m-0 mb-[8px] text-[14px] text-[#A1A1AA]", children: [
+            item.quantity,
+            " ticket",
+            item.quantity > 1 ? "s" : "",
+            " @ \xA3",
+            item.unitPrice.toFixed(2),
+            " each"
+          ] }),
+          /* @__PURE__ */ jsxDEV(Text6, { className: "m-0 mb-[8px] text-[14px] font-semibold text-[#D4AF37]", children: [
+            "Ticket Numbers: ",
+            item.ticketNumbers.join(", ")
+          ] }),
+          /* @__PURE__ */ jsxDEV(Text6, { className: "m-0 text-right text-[15px] font-semibold text-[#FFFFFF]", children: [
+            "\xA3",
+            item.totalPrice.toFixed(2)
+          ] })
+        ]
+      },
+      index
+    )),
+    /* @__PURE__ */ jsxDEV(Hr5, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Section6, { className: "mt-[16px]", children: [
+      /* @__PURE__ */ jsxDEV(Text6, { className: "flex justify-between text-[14px] text-[#FFFFFF]", children: [
+        /* @__PURE__ */ jsxDEV("span", { children: "Subtotal:" }),
+        /* @__PURE__ */ jsxDEV("span", { children: [
+          "\xA3",
+          subtotal.toFixed(2)
+        ] })
+      ] }),
+      discount && discount > 0 && /* @__PURE__ */ jsxDEV(Text6, { className: "flex justify-between text-[14px] text-[#22C55E]", children: [
+        /* @__PURE__ */ jsxDEV("span", { children: "Discount:" }),
+        /* @__PURE__ */ jsxDEV("span", { children: [
+          "-\xA3",
+          discount.toFixed(2)
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxDEV(
+        Text6,
+        {
+          className: "mt-[12px] flex justify-between border-t border-[#27272A] pt-[12px] text-[17px] font-semibold text-[#D4AF37]",
+          style: { borderTopWidth: "1px", borderTopStyle: "solid" },
+          children: [
+            /* @__PURE__ */ jsxDEV("span", { children: "Total:" }),
+            /* @__PURE__ */ jsxDEV("span", { children: [
+              "\xA3",
+              total.toFixed(2)
+            ] })
+          ]
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxDEV(Hr5, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Text6, { className: emailStyles.paragraph.className, children: "You can view your tickets and track draw dates in your dashboard." }),
+    /* @__PURE__ */ jsxDEV(Section6, { className: "my-[24px] text-center", children: /* @__PURE__ */ jsxDEV(
+      Button4,
+      {
+        href: `${emailConfig.site.url}/dashboard/tickets`,
+        className: emailStyles.button.className,
+        children: "View My Tickets"
+      }
+    ) }),
+    /* @__PURE__ */ jsxDEV(Hr5, { className: emailStyles.divider.className }),
+    /* @__PURE__ */ jsxDEV(Text6, { className: emailStyles.muted.className, children: [
+      "Questions about your order? Contact us at",
+      " ",
+      /* @__PURE__ */ jsxDEV(
+        Link6,
+        {
+          href: `mailto:${emailConfig.addresses.support}`,
+          className: "text-[#D4AF37] no-underline",
+          children: emailConfig.addresses.support
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxDEV(Text6, { className: emailStyles.paragraph.className, children: [
+      "Good luck!",
+      /* @__PURE__ */ jsxDEV("br", {}),
+      "The Luxero Team"
+    ] })
+  ] });
+}
+
+// src/routes/payments.ts
+init_models();
 var app19 = new Hono2();
 app19.post("/create-checkout-session", async (c) => {
   try {
@@ -5181,6 +5563,7 @@ app19.post("/create-checkout-session", async (c) => {
     order.status = "completed";
     order.paidAt = /* @__PURE__ */ new Date();
     await order.save();
+    const emailItems = [];
     for (const item of items) {
       const competition = await Competition.findById(item.competitionId).lean();
       if (!competition) continue;
@@ -5200,7 +5583,47 @@ app19.post("/create-checkout-session", async (c) => {
       await Profile.findByIdAndUpdate(userId, {
         $inc: { totalEntries: item.quantity, totalSpent: competition.ticketPrice * item.quantity }
       });
+      emailItems.push({
+        competitionTitle: competition.title,
+        quantity: item.quantity,
+        unitPrice: competition.ticketPrice,
+        ticketNumbers,
+        totalPrice: competition.ticketPrice * item.quantity
+      });
     }
+    (async () => {
+      try {
+        const profile = await Profile.findById(userId).lean();
+        const userName = profile?.fullName || profile?.email?.split("@")[0] || "Customer";
+        const orderDate = (/* @__PURE__ */ new Date()).toLocaleString("en-GB", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZoneName: "short"
+        });
+        const emailHtml = await render4(
+          OrderConfirmationEmail({
+            userName,
+            orderId: order._id.toString(),
+            orderDate,
+            items: emailItems,
+            subtotal: subtotal || 0,
+            discount: discount || 0,
+            total
+          })
+        );
+        await sendEmail({
+          to: profile?.email || "",
+          subject: `Order confirmed \u2014 Luxero (#${order._id.toString()})`,
+          html: emailHtml
+        });
+      } catch (emailErr) {
+        console.error("Failed to send order confirmation email:", emailErr);
+      }
+    })();
     return success(c, {
       orderId: order._id,
       sessionId: `cs_mock_${Date.now()}`,
@@ -5272,6 +5695,7 @@ app19.get("/session/:sessionId", async (c) => {
 var payments_default = app19;
 
 // src/routes/promo-codes.ts
+init_models();
 var app20 = new Hono2();
 app20.post("/validate", async (c) => {
   try {
@@ -5316,6 +5740,7 @@ app20.post("/validate", async (c) => {
 var promo_codes_default2 = app20;
 
 // src/routes/stats.ts
+init_models();
 var app21 = new Hono2();
 var statsCache = null;
 var CACHE_TTL_MS = 6e4;
@@ -5346,6 +5771,7 @@ app21.get("/", async (c) => {
 var stats_default = app21;
 
 // src/routes/winners.ts
+init_models();
 var app22 = new Hono2();
 app22.get("/", async (c) => {
   try {
